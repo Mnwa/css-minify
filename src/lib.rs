@@ -1,5 +1,6 @@
 pub(crate) mod parsers;
 pub(crate) mod structure;
+pub mod optimizations;
 
 #[cfg(test)]
 mod tests {

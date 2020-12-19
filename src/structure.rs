@@ -1,7 +1,7 @@
 use derive_more::{Deref, DerefMut, From, Into};
-use nom::lib::std::fmt::Formatter;
 use std::collections::HashMap;
 use std::fmt::Display;
+use std::fmt::Formatter;
 
 #[derive(Clone, Eq, PartialEq, Debug)]
 pub struct Block {
@@ -50,29 +50,25 @@ impl Display for Selector {
 
 impl Display for Selectors {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "{}",
-            self.0
-                .iter()
-                .map(|selector| format!("{}", selector))
-                .collect::<Vec<String>>()
-                .join(",")
-        )
+        let mut selectors = self
+            .0
+            .iter()
+            .map(|selector| format!("{}", selector))
+            .collect::<Vec<String>>();
+        selectors.sort();
+        write!(f, "{}", selectors.join(","))
     }
 }
 
 impl Display for Parameters {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "{};",
-            self.0
-                .iter()
-                .map(|(name, value)| format!("{}:{}", name, value))
-                .collect::<Vec<String>>()
-                .join(";")
-        )
+        let mut parameters = self
+            .0
+            .iter()
+            .map(|(name, value)| format!("{}:{}", name, value))
+            .collect::<Vec<String>>();
+        parameters.sort();
+        write!(f, "{};", parameters.join(";"))
     }
 }
 
@@ -98,7 +94,6 @@ impl Display for Blocks {
 
 #[cfg(test)]
 mod test {
-    use crate::parsers::block::parse_blocks;
     use crate::structure::{Block, Blocks, Selector};
     use std::collections::HashMap;
 
@@ -133,6 +128,6 @@ mod test {
             },
         ]
         .into();
-        assert_eq!(parse_blocks(&format!("{}", blocks)), Ok(("", blocks)))
+        assert_eq!(format!("{}", blocks), "#some_id,input{color:white;padding:5px 3px;}#some_id_2,.class{color:black;padding:5px 4px;}")
     }
 }
