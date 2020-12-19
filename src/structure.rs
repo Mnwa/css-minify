@@ -68,7 +68,7 @@ impl Display for Parameters {
             .map(|(name, value)| format!("{}:{}", name, value))
             .collect::<Vec<String>>();
         parameters.sort();
-        write!(f, "{};", parameters.join(";"))
+        write!(f, "{}", parameters.join(";"))
     }
 }
 
