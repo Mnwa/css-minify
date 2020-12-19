@@ -1,15 +1,15 @@
 use crate::parsers::parameters::parse_parameters;
 use crate::parsers::selector::parse_selectors;
 use crate::parsers::useless::non_useless;
-use crate::structure::Block;
+use crate::structure::{Block, Blocks};
 use nom::bytes::complete::tag;
 use nom::combinator::map;
 use nom::multi::many0;
 use nom::sequence::tuple;
 use nom::IResult;
 
-pub fn parse_blocks(input: &str) -> IResult<&str, Vec<Block>> {
-    many0(non_useless(parse_block))(input)
+pub fn parse_blocks(input: &str) -> IResult<&str, Blocks> {
+    map(many0(non_useless(parse_block)), |blocks| blocks.into())(input)
 }
 
 pub fn parse_block(input: &str) -> IResult<&str, Block> {
@@ -113,6 +113,7 @@ mod test {
                         }
                     },
                 ]
+                .into()
             ))
         )
     }
