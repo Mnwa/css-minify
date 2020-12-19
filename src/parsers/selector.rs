@@ -1,5 +1,5 @@
 use crate::parsers::useless::non_useless;
-use crate::structure::Selector;
+use crate::structure::{Selector, Selectors};
 use nom::branch::alt;
 use nom::bytes::complete::{is_not, tag};
 use nom::character::complete::char;
@@ -8,8 +8,11 @@ use nom::multi::separated_list1;
 use nom::sequence::preceded;
 use nom::IResult;
 
-pub fn parse_selectors(input: &str) -> IResult<&str, Vec<Selector>> {
-    separated_list1(char(','), non_useless(parse_selector))(input)
+pub fn parse_selectors(input: &str) -> IResult<&str, Selectors> {
+    map(
+        separated_list1(char(','), non_useless(parse_selector)),
+        |selectors| selectors.into(),
+    )(input)
 }
 
 pub fn parse_selector(input: &str) -> IResult<&str, Selector> {
@@ -34,7 +37,7 @@ pub fn parse_tag(input: &str) -> IResult<&str, Selector> {
 
 #[cfg(test)]
 mod test {
-    use crate::parsers::selector::{parse_id, parse_selector, parse_selectors};
+    use crate::parsers::selector::{parse_selector, parse_selectors};
     use crate::structure::Selector;
 
     #[test]
@@ -64,6 +67,7 @@ mod test {
                     Selector::Class("some_class".into()),
                     Selector::Tag("input".into())
                 ]
+                .into()
             ))
         );
     }

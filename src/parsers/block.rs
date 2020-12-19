@@ -52,12 +52,13 @@ mod test {
                     selectors: vec![
                         Selector::Id("some_id".into()),
                         Selector::Tag("input".into())
-                    ],
+                    ]
+                    .into(),
                     parameters: {
                         let mut tmp = HashMap::new();
                         tmp.insert("padding".into(), "5px 3px".into());
                         tmp.insert("color".into(), "white".into());
-                        tmp
+                        tmp.into()
                     }
                 }
             ))
@@ -89,24 +90,26 @@ mod test {
                         selectors: vec![
                             Selector::Id("some_id".into()),
                             Selector::Tag("input".into())
-                        ],
+                        ]
+                        .into(),
                         parameters: {
                             let mut tmp = HashMap::new();
                             tmp.insert("padding".into(), "5px 3px".into());
                             tmp.insert("color".into(), "white".into());
-                            tmp
+                            tmp.into()
                         }
                     },
                     Block {
                         selectors: vec![
                             Selector::Id("some_id_2".into()),
                             Selector::Class("class".into())
-                        ],
+                        ]
+                        .into(),
                         parameters: {
                             let mut tmp = HashMap::new();
                             tmp.insert("padding".into(), "5px 4px".into());
                             tmp.insert("color".into(), "black".into());
-                            tmp
+                            tmp.into()
                         }
                     },
                 ]

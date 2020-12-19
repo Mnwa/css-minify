@@ -8,3 +8,4 @@ edition = "2018"
 
 [dependencies]
 nom = "6"
+derive_more = "0.99"

@@ -1,5 +1,5 @@
 use crate::parsers::useless::non_useless;
-use crate::structure::{Name, Value};
+use crate::structure::{Name, Parameters, Value};
 use nom::bytes::complete::{is_not, tag};
 use nom::character::complete::char;
 use nom::combinator::{map, not};
@@ -8,10 +8,10 @@ use nom::multi::many0;
 use nom::sequence::{preceded, separated_pair, terminated};
 use nom::IResult;
 
-pub fn parse_parameters(input: &str) -> IResult<&str, HashMap<Name, Value>> {
+pub fn parse_parameters(input: &str) -> IResult<&str, Parameters> {
     map(
         many0(non_useless(preceded(not(char('}')), parse_parameter))),
-        |p| p.into_iter().collect(),
+        |p| p.into_iter().collect::<HashMap<_, _>>().into(),
     )(input)
 }
 
@@ -56,7 +56,7 @@ mod test {
                 tmp.insert("margin-bottom".into(), "32px".into());
                 tmp.insert("margin-left".into(), "32px".into());
                 tmp.insert("float".into(), "left".into());
-                tmp
+                tmp.into()
             }))
         )
     }
