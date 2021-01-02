@@ -10,13 +10,13 @@ pub struct Block {
 }
 
 #[derive(Clone, Eq, PartialEq, Default, Debug, Deref, DerefMut, From, Into)]
-pub struct Selectors(Vec<Selector>);
+pub struct Selectors(pub(crate) Vec<Selector>);
 
 #[derive(Clone, Eq, PartialEq, Default, Debug, Deref, DerefMut, From, Into)]
-pub struct Parameters(HashMap<Name, Value>);
+pub struct Parameters(pub(crate) HashMap<Name, Value>);
 
 #[derive(Clone, Eq, PartialEq, Default, Debug, Deref, DerefMut, From, Into)]
-pub struct Blocks(Vec<Block>);
+pub struct Blocks(pub(crate) Vec<Block>);
 
 pub type Name = String;
 pub type Value = String;
@@ -128,6 +128,6 @@ mod test {
             },
         ]
         .into();
-        assert_eq!(format!("{}", blocks), "#some_id,input{color:white;padding:5px 3px;}#some_id_2,.class{color:black;padding:5px 4px;}")
+        assert_eq!(format!("{}", blocks), "#some_id,input{color:white;padding:5px 3px}#some_id_2,.class{color:black;padding:5px 4px}")
     }
 }
