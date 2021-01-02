@@ -1,0 +1,11 @@
+[package]
+name = "css-minify"
+version = "0.1.0"
+authors = ["Mnwa <mihan@panfilov.biz>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+nom = "6"
+derive_more = "0.99"
