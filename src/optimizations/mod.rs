@@ -5,6 +5,7 @@ mod transformer;
 use crate::optimizations::color::optimize_color;
 use crate::optimizations::transformer::{Transform, Transformer, TransformerParameterFn};
 use crate::parsers::block::parse_blocks;
+use crate::structure::Value;
 use derive_more::{From, Into};
 use std::error::Error;
 use std::fmt::Display;
@@ -28,6 +29,15 @@ impl Default for Minifier {
         let mut transformer = Transformer::default();
         transformer.register_parameter(TransformerParameterFn::Value(Box::new(|value| {
             optimize_color(&value).into()
+        })));
+        transformer.register_parameter(TransformerParameterFn::Value(Box::new(|value| {
+            if value.starts_with("0") && Some(&b'.') != value.as_bytes().get(1) {
+                return Value::from("0");
+            }
+            value
+        })));
+        transformer.register_parameter(TransformerParameterFn::Value(Box::new(|value| {
+            Value::from(value.trim_start_matches("0."))
         })));
 
         transformer.register_parameter(TransformerParameterFn::Name(Box::new(|name| {
