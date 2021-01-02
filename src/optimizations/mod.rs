@@ -1,8 +1,9 @@
 mod color;
+mod merge_m_n_p;
 mod transformer;
 
 use crate::optimizations::color::optimize_color;
-use crate::optimizations::transformer::{Transformer, TransformerParameterFn};
+use crate::optimizations::transformer::{Transform, Transformer, TransformerParameterFn};
 use crate::parsers::block::parse_blocks;
 use derive_more::{From, Into};
 use std::error::Error;

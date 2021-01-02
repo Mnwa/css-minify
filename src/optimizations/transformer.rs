@@ -15,8 +15,10 @@ impl Transformer {
     pub fn register_parameter(&mut self, transformer: TransformerParameterFn) {
         self.parameters.push(transformer)
     }
+}
 
-    pub fn transform(
+impl Transform for Transformer {
+    fn transform(
         &mut self,
         Block {
             selectors,
@@ -41,8 +43,11 @@ impl Transformer {
                 .into(),
         }
     }
+}
 
-    pub fn transform_many(&mut self, blocks: Blocks) -> Blocks {
+pub trait Transform {
+    fn transform(&mut self, block: Block) -> Block;
+    fn transform_many(&mut self, blocks: Blocks) -> Blocks {
         Blocks(blocks.0.into_iter().map(|b| self.transform(b)).collect())
     }
 }
