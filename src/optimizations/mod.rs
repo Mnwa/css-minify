@@ -29,6 +29,10 @@ impl Default for Minifier {
             optimize_color(&value).into()
         })));
 
+        transformer.register_parameter(TransformerParameterFn::Name(Box::new(|name| {
+            name.to_lowercase()
+        })));
+
         Minifier { transformer }
     }
 }
@@ -64,7 +68,7 @@ mod test {
                 /* this is are test id */
                 #some_id_2, .class {
                     padding: 5px 4px; /* Mega comment */
-                    color: rgb(255, 255, 255);
+                    Color: rgb(255, 255, 255);
                 }
             "#
             ),
