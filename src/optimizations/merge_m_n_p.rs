@@ -16,11 +16,15 @@ impl Transform for Merge {
         let mut margin = Margin::default();
         let mut padding = Padding::default();
         block.parameters.0.iter().for_each(|(name, val)| {
-            margin.add(name, val.clone());
-            padding.add(name, val.clone());
+            if !block.parameters.0.contains_key("margin") {
+                margin.add(name, val.clone());
+            }
+            if !block.parameters.0.contains_key("padding") {
+                padding.add(name, val.clone());
+            }
         });
 
-        if margin.is_full() {
+        if margin.is_may_be_merged() {
             block
                 .parameters
                 .insert(String::from("margin"), margin.to_string());
@@ -29,7 +33,7 @@ impl Transform for Merge {
             block.parameters.0.remove("margin-left");
             block.parameters.0.remove("margin-right");
         }
-        if padding.is_full() {
+        if padding.is_may_be_merged() {
             block
                 .parameters
                 .insert(String::from("padding"), padding.to_string());
@@ -66,7 +70,7 @@ impl Margin {
         }
     }
 
-    fn is_full(&self) -> bool {
+    fn is_may_be_merged(&self) -> bool {
         self.0.is_some() && self.1.is_some() && self.2.is_some() && self.3.is_some()
     }
 }
@@ -94,7 +98,7 @@ impl Padding {
         }
     }
 
-    fn is_full(&self) -> bool {
+    fn is_may_be_merged(&self) -> bool {
         self.0.is_some() && self.1.is_some() && self.2.is_some() && self.3.is_some()
     }
 }

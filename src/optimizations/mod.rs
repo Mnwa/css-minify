@@ -1,8 +1,11 @@
 mod color;
 mod merge_m_n_p;
+mod merge_shorthand;
 mod transformer;
 
 use crate::optimizations::color::optimize_color;
+use crate::optimizations::merge_m_n_p::Merge;
+use crate::optimizations::merge_shorthand::MergeShortHand;
 use crate::optimizations::transformer::{Transform, Transformer, TransformerParameterFn};
 use crate::parsers::block::parse_blocks;
 use crate::structure::Value;
@@ -13,6 +16,8 @@ use std::fmt::Formatter;
 
 pub struct Minifier {
     transformer: Transformer,
+    merge_m_n_p: Merge,
+    merge_shorthand: MergeShortHand,
 }
 
 impl Minifier {
@@ -20,6 +25,8 @@ impl Minifier {
         parse_blocks(input)
             .map_err(MError::from)
             .map(|(other, blocks)| (other, self.transformer.transform_many(blocks)))
+            .map(|(other, blocks)| (other, self.merge_m_n_p.transform_many(blocks)))
+            .map(|(other, blocks)| (other, self.merge_shorthand.transform_many(blocks)))
             .map(|(other, blocks)| (other, blocks.to_string()))
     }
 }
@@ -44,7 +51,14 @@ impl Default for Minifier {
             name.to_lowercase()
         })));
 
-        Minifier { transformer }
+        let merge_m_n_p = Merge::default();
+        let merge_shorthand = MergeShortHand::default();
+
+        Minifier {
+            merge_m_n_p,
+            merge_shorthand,
+            transformer,
+        }
     }
 }
 
