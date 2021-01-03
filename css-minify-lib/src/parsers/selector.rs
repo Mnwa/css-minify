@@ -1,16 +1,19 @@
 use crate::parsers::useless::non_useless;
 use crate::structure::{Selector, Selectors};
 use nom::branch::alt;
-use nom::bytes::complete::{is_not, tag};
+use nom::bytes::complete::is_not;
 use nom::character::complete::char;
-use nom::combinator::map;
+use nom::combinator::{map, not};
 use nom::multi::separated_list1;
 use nom::sequence::preceded;
 use nom::IResult;
 
 pub fn parse_selectors(input: &str) -> IResult<&str, Selectors> {
     map(
-        separated_list1(char(','), non_useless(parse_selector)),
+        preceded(
+            not(alt((char('@'), char('{'), char('}')))),
+            separated_list1(char(','), non_useless(parse_selector)),
+        ),
         |selectors| selectors.into(),
     )(input)
 }
@@ -20,13 +23,13 @@ pub fn parse_selector(input: &str) -> IResult<&str, Selector> {
 }
 
 pub fn parse_id(input: &str) -> IResult<&str, Selector> {
-    map(preceded(tag("#"), is_not(",{")), |i: &str| {
+    map(preceded(char('#'), is_not(",{")), |i: &str| {
         Selector::Id(i.trim().into())
     })(input)
 }
 
 pub fn parse_class(input: &str) -> IResult<&str, Selector> {
-    map(preceded(tag("."), is_not(",{")), |i: &str| {
+    map(preceded(char('.'), is_not(",{")), |i: &str| {
         Selector::Class(i.trim().into())
     })(input)
 }

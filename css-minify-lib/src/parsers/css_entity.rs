@@ -15,9 +15,9 @@ pub fn parse_css(input: &str) -> IResult<&str, CssEntities> {
 
 pub fn parse_entity(input: &str) -> IResult<&str, CssEntity> {
     alt((
-        map(parse_block, |block| CssEntity::Block(block)),
         map(parse_media, |media| CssEntity::Media(media)),
         map(parse_charset, |charset| CssEntity::Charset(charset)),
+        map(parse_block, |block| CssEntity::Block(block)),
     ))(input)
 }
 

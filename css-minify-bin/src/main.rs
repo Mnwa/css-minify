@@ -15,8 +15,6 @@ fn main() {
     let Opts { input, output } = Opts::parse();
     let mut minifier = Minifier::default();
 
-    println!("{}", input);
-
     let input_file = read_to_string(
         shellexpand::full(&input)
             .expect("fail to parse input path")

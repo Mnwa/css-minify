@@ -24,7 +24,6 @@ impl Minifier {
     pub fn minify<'a>(&mut self, input: &'a str) -> MResult<'a> {
         parse_css(input)
             .map_err(MError::from)
-            .map(|(other, blocks)| (other, self.transformer.transform_many(blocks)))
             .map(|(other, blocks)| (other, self.merge_m_n_p.transform_many(blocks)))
             .map(|(other, blocks)| (other, self.merge_shorthand.transform_many(blocks)))
             .map(|(other, blocks)| (other, blocks.to_string()))
