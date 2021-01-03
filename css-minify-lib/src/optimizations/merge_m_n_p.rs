@@ -12,7 +12,7 @@ pub struct Margin(Option<Value>, Option<Value>, Option<Value>, Option<Value>);
 pub struct Padding(Option<Value>, Option<Value>, Option<Value>, Option<Value>);
 
 impl Transform for Merge {
-    fn transform(&mut self, mut block: Block) -> Block {
+    fn transform_block(&mut self, mut block: Block) -> Block {
         let mut margin = Margin::default();
         let mut padding = Padding::default();
         block.parameters.0.iter().for_each(|(name, val)| {
@@ -155,17 +155,20 @@ mod test {
     #[test]
     fn test_full_compress() {
         assert_eq!(
-            Merge::default().transform(Block {
-                selectors: Selectors::default(),
-                parameters: {
-                    let mut map = HashMap::new();
-                    map.insert("margin-top".into(), "3px".into());
-                    map.insert("margin-bottom".into(), "3px".into());
-                    map.insert("margin-left".into(), "3px".into());
-                    map.insert("margin-right".into(), "3px".into());
-                    Parameters(map)
-                },
-            }),
+            Merge::default().transform(
+                Block {
+                    selectors: Selectors::default(),
+                    parameters: {
+                        let mut map = HashMap::new();
+                        map.insert("margin-top".into(), "3px".into());
+                        map.insert("margin-bottom".into(), "3px".into());
+                        map.insert("margin-left".into(), "3px".into());
+                        map.insert("margin-right".into(), "3px".into());
+                        Parameters(map)
+                    },
+                }
+                .into()
+            ),
             Block {
                 selectors: Selectors::default(),
                 parameters: {
@@ -174,23 +177,27 @@ mod test {
                     Parameters(map)
                 },
             }
+            .into()
         )
     }
 
     #[test]
     fn test_compress_2() {
         assert_eq!(
-            Merge::default().transform(Block {
-                selectors: Selectors::default(),
-                parameters: {
-                    let mut map = HashMap::new();
-                    map.insert("margin-top".into(), "3px".into());
-                    map.insert("margin-bottom".into(), "3px".into());
-                    map.insert("margin-left".into(), "4px".into());
-                    map.insert("margin-right".into(), "4px".into());
-                    Parameters(map)
-                },
-            }),
+            Merge::default().transform(
+                Block {
+                    selectors: Selectors::default(),
+                    parameters: {
+                        let mut map = HashMap::new();
+                        map.insert("margin-top".into(), "3px".into());
+                        map.insert("margin-bottom".into(), "3px".into());
+                        map.insert("margin-left".into(), "4px".into());
+                        map.insert("margin-right".into(), "4px".into());
+                        Parameters(map)
+                    },
+                }
+                .into()
+            ),
             Block {
                 selectors: Selectors::default(),
                 parameters: {
@@ -199,23 +206,27 @@ mod test {
                     Parameters(map)
                 },
             }
+            .into()
         )
     }
 
     #[test]
     fn test_compress_3() {
         assert_eq!(
-            Merge::default().transform(Block {
-                selectors: Selectors::default(),
-                parameters: {
-                    let mut map = HashMap::new();
-                    map.insert("margin-top".into(), "3px".into());
-                    map.insert("margin-bottom".into(), "1px".into());
-                    map.insert("margin-left".into(), "4px".into());
-                    map.insert("margin-right".into(), "4px".into());
-                    Parameters(map)
-                },
-            }),
+            Merge::default().transform(
+                Block {
+                    selectors: Selectors::default(),
+                    parameters: {
+                        let mut map = HashMap::new();
+                        map.insert("margin-top".into(), "3px".into());
+                        map.insert("margin-bottom".into(), "1px".into());
+                        map.insert("margin-left".into(), "4px".into());
+                        map.insert("margin-right".into(), "4px".into());
+                        Parameters(map)
+                    },
+                }
+                .into()
+            ),
             Block {
                 selectors: Selectors::default(),
                 parameters: {
@@ -224,23 +235,27 @@ mod test {
                     Parameters(map)
                 },
             }
+            .into()
         )
     }
 
     #[test]
     fn test_compress_4() {
         assert_eq!(
-            Merge::default().transform(Block {
-                selectors: Selectors::default(),
-                parameters: {
-                    let mut map = HashMap::new();
-                    map.insert("margin-top".into(), "3px".into());
-                    map.insert("margin-bottom".into(), "1px".into());
-                    map.insert("margin-left".into(), "2px".into());
-                    map.insert("margin-right".into(), "4px".into());
-                    Parameters(map)
-                },
-            }),
+            Merge::default().transform(
+                Block {
+                    selectors: Selectors::default(),
+                    parameters: {
+                        let mut map = HashMap::new();
+                        map.insert("margin-top".into(), "3px".into());
+                        map.insert("margin-bottom".into(), "1px".into());
+                        map.insert("margin-left".into(), "2px".into());
+                        map.insert("margin-right".into(), "4px".into());
+                        Parameters(map)
+                    },
+                }
+                .into()
+            ),
             Block {
                 selectors: Selectors::default(),
                 parameters: {
@@ -249,6 +264,7 @@ mod test {
                     Parameters(map)
                 },
             }
+            .into()
         )
     }
 }

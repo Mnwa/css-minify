@@ -7,7 +7,7 @@ use crate::optimizations::color::optimize_color;
 use crate::optimizations::merge_m_n_p::Merge;
 use crate::optimizations::merge_shorthand::MergeShortHand;
 use crate::optimizations::transformer::{Transform, Transformer, TransformerParameterFn};
-use crate::parsers::block::parse_blocks;
+use crate::parsers::css_entity::parse_css;
 use crate::structure::Value;
 use derive_more::{From, Into};
 use std::error::Error;
@@ -22,7 +22,7 @@ pub struct Minifier {
 
 impl Minifier {
     pub fn minify<'a>(&mut self, input: &'a str) -> MResult<'a> {
-        parse_blocks(input)
+        parse_css(input)
             .map_err(MError::from)
             .map(|(other, blocks)| (other, self.transformer.transform_many(blocks)))
             .map(|(other, blocks)| (other, self.merge_m_n_p.transform_many(blocks)))

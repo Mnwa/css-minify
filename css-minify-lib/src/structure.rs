@@ -9,6 +9,19 @@ pub struct Block {
     pub parameters: Parameters,
 }
 
+#[derive(Clone, Eq, PartialEq, Debug)]
+pub struct Media {
+    pub screen: Name,
+    pub blocks: Blocks,
+}
+
+#[derive(Clone, Eq, PartialEq, Debug, From)]
+pub enum CssEntity {
+    Block(Block),
+    Media(Media),
+    Charset(Value),
+}
+
 #[derive(Clone, Eq, PartialEq, Default, Debug, Deref, DerefMut, From, Into)]
 pub struct Selectors(pub(crate) Vec<Selector>);
 
@@ -17,6 +30,9 @@ pub struct Parameters(pub(crate) HashMap<Name, Value>);
 
 #[derive(Clone, Eq, PartialEq, Default, Debug, Deref, DerefMut, From, Into)]
 pub struct Blocks(pub(crate) Vec<Block>);
+
+#[derive(Clone, Eq, PartialEq, Default, Debug, Deref, DerefMut, From, Into)]
+pub struct CssEntities(pub(crate) Vec<CssEntity>);
 
 pub type Name = String;
 pub type Value = String;
@@ -78,7 +94,37 @@ impl Display for Block {
     }
 }
 
+impl Display for Media {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "@media {}{{{}}}", self.screen, self.blocks)
+    }
+}
+
+impl Display for CssEntity {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            CssEntity::Block(block) => write!(f, "{}", block),
+            CssEntity::Media(media) => write!(f, "{}", media),
+            CssEntity::Charset(charset) => write!(f, "@charset {}", charset),
+        }
+    }
+}
+
 impl Display for Blocks {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            self.0
+                .iter()
+                .map(|block| format!("{}", block))
+                .collect::<Vec<String>>()
+                .join("")
+        )
+    }
+}
+
+impl Display for CssEntities {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(
             f,

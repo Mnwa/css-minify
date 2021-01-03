@@ -32,7 +32,7 @@ mod test {
     use crate::parsers::block::{parse_block, parse_blocks};
     use crate::parsers::useless::non_useless;
     use crate::structure::{Block, Selector};
-    use nom::lib::std::collections::HashMap;
+    use std::collections::HashMap;
 
     #[test]
     fn test_block() {

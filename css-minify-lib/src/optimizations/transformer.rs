@@ -1,4 +1,4 @@
-use crate::structure::{Block, Blocks, Name, Value};
+use crate::structure::{Block, CssEntities, CssEntity, Media, Name, Value};
 use std::collections::HashMap;
 
 #[derive(Default)]
@@ -18,7 +18,7 @@ impl Transformer {
 }
 
 impl Transform for Transformer {
-    fn transform(
+    fn transform_block(
         &mut self,
         Block {
             selectors,
@@ -46,8 +46,23 @@ impl Transform for Transformer {
 }
 
 pub trait Transform {
-    fn transform(&mut self, block: Block) -> Block;
-    fn transform_many(&mut self, blocks: Blocks) -> Blocks {
-        Blocks(blocks.0.into_iter().map(|b| self.transform(b)).collect())
+    fn transform_block(&mut self, block: Block) -> Block;
+    fn transform(&mut self, entity: CssEntity) -> CssEntity {
+        match entity {
+            CssEntity::Block(block) => CssEntity::Block(self.transform_block(block)),
+            CssEntity::Media(Media { screen, blocks }) => CssEntity::Media(Media {
+                screen,
+                blocks: blocks
+                    .0
+                    .into_iter()
+                    .map(|block| self.transform_block(block))
+                    .collect::<Vec<_>>()
+                    .into(),
+            }),
+            e => e,
+        }
+    }
+    fn transform_many(&mut self, blocks: CssEntities) -> CssEntities {
+        CssEntities(blocks.0.into_iter().map(|b| self.transform(b)).collect())
     }
 }

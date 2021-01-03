@@ -7,7 +7,7 @@ use std::fmt::Display;
 pub struct MergeShortHand;
 
 impl Transform for MergeShortHand {
-    fn transform(&mut self, mut block: Block) -> Block {
+    fn transform_block(&mut self, mut block: Block) -> Block {
         let mut font = FontShortHand::default();
         let mut list = ListShortHand::default();
         let mut background = BackgroundShortHand::default();
@@ -377,18 +377,21 @@ mod test {
     #[test]
     fn test_compress_font() {
         assert_eq!(
-            MergeShortHand::default().transform(Block {
-                selectors: Selectors::default(),
-                parameters: {
-                    let mut map = HashMap::new();
-                    map.insert("font-style".into(), "italic".into());
-                    map.insert("font-weight".into(), "bold".into());
-                    map.insert("font-size".into(), ".8em".into());
-                    map.insert("line-height".into(), "1.2".into());
-                    map.insert("font-family".into(), "Arial, sans-serif".into());
-                    Parameters(map)
-                },
-            }),
+            MergeShortHand::default().transform(
+                Block {
+                    selectors: Selectors::default(),
+                    parameters: {
+                        let mut map = HashMap::new();
+                        map.insert("font-style".into(), "italic".into());
+                        map.insert("font-weight".into(), "bold".into());
+                        map.insert("font-size".into(), ".8em".into());
+                        map.insert("line-height".into(), "1.2".into());
+                        map.insert("font-family".into(), "Arial, sans-serif".into());
+                        Parameters(map)
+                    },
+                }
+                .into()
+            ),
             Block {
                 selectors: Selectors::default(),
                 parameters: {
@@ -400,23 +403,27 @@ mod test {
                     Parameters(map)
                 },
             }
+            .into()
         )
     }
 
     #[test]
     fn test_compress_background() {
         assert_eq!(
-            MergeShortHand::default().transform(Block {
-                selectors: Selectors::default(),
-                parameters: {
-                    let mut map = HashMap::new();
-                    map.insert("background-color".into(), "#000".into());
-                    map.insert("background-image".into(), "url(images/bg.gif)".into());
-                    map.insert("background-repeat".into(), "no-repeat".into());
-                    map.insert("background-position".into(), "left top".into());
-                    Parameters(map)
-                },
-            }),
+            MergeShortHand::default().transform(
+                Block {
+                    selectors: Selectors::default(),
+                    parameters: {
+                        let mut map = HashMap::new();
+                        map.insert("background-color".into(), "#000".into());
+                        map.insert("background-image".into(), "url(images/bg.gif)".into());
+                        map.insert("background-repeat".into(), "no-repeat".into());
+                        map.insert("background-position".into(), "left top".into());
+                        Parameters(map)
+                    },
+                }
+                .into()
+            ),
             Block {
                 selectors: Selectors::default(),
                 parameters: {
@@ -428,22 +435,26 @@ mod test {
                     Parameters(map)
                 },
             }
+            .into()
         )
     }
 
     #[test]
     fn test_compress_border() {
         assert_eq!(
-            MergeShortHand::default().transform(Block {
-                selectors: Selectors::default(),
-                parameters: {
-                    let mut map = HashMap::new();
-                    map.insert("border-width".into(), "1px".into());
-                    map.insert("border-style".into(), "solid".into());
-                    map.insert("border-color".into(), "#000".into());
-                    Parameters(map)
-                },
-            }),
+            MergeShortHand::default().transform(
+                Block {
+                    selectors: Selectors::default(),
+                    parameters: {
+                        let mut map = HashMap::new();
+                        map.insert("border-width".into(), "1px".into());
+                        map.insert("border-style".into(), "solid".into());
+                        map.insert("border-color".into(), "#000".into());
+                        Parameters(map)
+                    },
+                }
+                .into()
+            ),
             Block {
                 selectors: Selectors::default(),
                 parameters: {
@@ -452,22 +463,26 @@ mod test {
                     Parameters(map)
                 },
             }
+            .into()
         )
     }
 
     #[test]
     fn test_compress_outline() {
         assert_eq!(
-            MergeShortHand::default().transform(Block {
-                selectors: Selectors::default(),
-                parameters: {
-                    let mut map = HashMap::new();
-                    map.insert("outline-width".into(), "1px".into());
-                    map.insert("outline-style".into(), "solid".into());
-                    map.insert("outline-color".into(), "#000".into());
-                    Parameters(map)
-                },
-            }),
+            MergeShortHand::default().transform(
+                Block {
+                    selectors: Selectors::default(),
+                    parameters: {
+                        let mut map = HashMap::new();
+                        map.insert("outline-width".into(), "1px".into());
+                        map.insert("outline-style".into(), "solid".into());
+                        map.insert("outline-color".into(), "#000".into());
+                        Parameters(map)
+                    },
+                }
+                .into()
+            ),
             Block {
                 selectors: Selectors::default(),
                 parameters: {
@@ -476,6 +491,7 @@ mod test {
                     Parameters(map)
                 },
             }
+            .into()
         )
     }
 }
