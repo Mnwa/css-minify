@@ -3,23 +3,47 @@ use std::collections::HashMap;
 use std::fmt::Display;
 use std::fmt::Formatter;
 
-#[derive(Clone, Eq, PartialEq, Debug)]
+#[derive(Clone, Eq, PartialEq, Debug, From, Into)]
 pub struct Block {
     pub selectors: Selectors,
     pub parameters: Parameters,
 }
 
-#[derive(Clone, Eq, PartialEq, Debug)]
+#[derive(Clone, Eq, PartialEq, Debug, From, Into)]
 pub struct Media {
     pub screen: Name,
     pub blocks: Blocks,
+}
+
+#[derive(Clone, Eq, PartialEq, Debug, From, Into)]
+pub struct NamespaceAt {
+    prefix: Option<Value>,
+    url: Value,
+}
+
+#[derive(Clone, Eq, PartialEq, Debug, From, Into)]
+pub struct ImportAt {
+    url: Value,
+    media_queries: Option<Value>,
+}
+
+#[derive(Clone, Eq, PartialEq, Debug, From, Into)]
+pub struct CharsetAt {
+    charset: Value,
+}
+
+#[derive(Clone, Eq, PartialEq, Debug, From)]
+pub enum At {
+    Namespace(NamespaceAt),
+    Import(ImportAt),
+    Charset(CharsetAt),
 }
 
 #[derive(Clone, Eq, PartialEq, Debug, From)]
 pub enum CssEntity {
     Block(Block),
     Media(Media),
-    Charset(Value),
+    At(At),
 }
 
 #[derive(Clone, Eq, PartialEq, Default, Debug, Deref, DerefMut, From, Into)]
@@ -105,7 +129,7 @@ impl Display for CssEntity {
         match self {
             CssEntity::Block(block) => write!(f, "{}", block),
             CssEntity::Media(media) => write!(f, "{}", media),
-            CssEntity::Charset(charset) => write!(f, "@charset {}", charset),
+            CssEntity::At(at) => write!(f, "{}", at),
         }
     }
 }
@@ -121,6 +145,47 @@ impl Display for Blocks {
                 .collect::<Vec<String>>()
                 .join("")
         )
+    }
+}
+
+impl Display for NamespaceAt {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "@namespace ")?;
+        if let Some(prefix) = &self.prefix {
+            write!(f, "{} ", prefix)?;
+        }
+        write!(f, "{}", self.url)?;
+        Ok(())
+    }
+}
+
+impl Display for CharsetAt {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "@charset {}", self.charset)
+    }
+}
+
+impl Display for ImportAt {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "@import {}", self.url)?;
+        if let Some(media_queries) = &self.media_queries {
+            write!(f, " {}", media_queries)?
+        }
+        Ok(())
+    }
+}
+
+impl Display for At {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            At::Namespace(n) => {
+                write!(f, "{}", n)
+            }
+            At::Import(i) => {
+                write!(f, "{}", i)
+            }
+            At::Charset(c) => write!(f, "{}", c),
+        }
     }
 }
 
