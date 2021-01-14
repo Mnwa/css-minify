@@ -137,6 +137,9 @@ pub fn parse_charset(input: &str) -> IResult<&str, CharsetAt> {
     )(input)
 }
 
+/**
+@TODO перевести на opt
+*/
 pub fn parse_namespace(input: &str) -> IResult<&str, NamespaceAt> {
     map(
         map_parser(
