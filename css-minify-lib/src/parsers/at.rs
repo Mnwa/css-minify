@@ -1,9 +1,9 @@
-use crate::parsers::block::parse_blocks;
+use crate::parsers::css_entity::parse_entities;
 use crate::parsers::parameters::parse_parameters;
 use crate::parsers::useless::{is_not_block_ending, non_useless, parse_to_block_open};
 use crate::structure::{
     At, CharsetAt, FontFace, ImportAt, KeyframeBlock, KeyframeBlocks, Keyframes, Media,
-    NamespaceAt, Value, Viewport,
+    NamespaceAt, Supports, Value, Viewport,
 };
 use nom::branch::alt;
 use nom::bytes::complete::{is_a, is_not, tag};
@@ -18,23 +18,46 @@ pub fn parse_media(input: &str) -> IResult<&str, Media> {
             tag("@media"),
             non_useless(parse_to_block_open),
             tag("{"),
-            non_useless(parse_blocks),
+            non_useless(parse_entities),
             tag("}"),
         ))),
-        |(_, screen, _, blocks, _)| Media { screen, blocks },
+        |(_, screen, _, entities, _)| Media { screen, entities },
+    )(input)
+}
+
+pub fn parse_supports(input: &str) -> IResult<&str, Supports> {
+    map(
+        non_useless(tuple((
+            tag("@supports"),
+            non_useless(parse_to_block_open),
+            tag("{"),
+            non_useless(parse_entities),
+            tag("}"),
+        ))),
+        |(_, conditions, _, entities, _)| Supports {
+            conditions,
+            entities,
+        },
     )(input)
 }
 
 pub fn parse_keyframes(input: &str) -> IResult<&str, Keyframes> {
     map(
         non_useless(tuple((
-            tag("@keyframes"),
+            alt((
+                map(tag("@keyframes"), |_| false),
+                map(tag("@-webkit-keyframes"), |_| true),
+            )),
             non_useless(parse_to_block_open),
             tag("{"),
             non_useless(parse_keyframe_blocks),
             tag("}"),
         ))),
-        |(_, name, _, blocks, _)| Keyframes { name, blocks },
+        |(webkit_prefix, name, _, blocks, _)| Keyframes {
+            name,
+            blocks,
+            webkit_prefix,
+        },
     )(input)
 }
 
@@ -144,13 +167,15 @@ pub fn parse_import(input: &str) -> IResult<&str, ImportAt> {
     )(input)
 }
 
+#[cfg(test)]
 mod test {
     use crate::parsers::at::{
         parse_charset, parse_font_face, parse_import, parse_keyframes, parse_media,
-        parse_namespace, parse_viewport,
+        parse_namespace, parse_supports, parse_viewport,
     };
     use crate::structure::{
-        Block, FontFace, KeyframeBlock, Keyframes, Media, Name, Selector, Value, Viewport,
+        Block, CssEntity, FontFace, KeyframeBlock, Keyframes, Media, Name, Selector, Supports,
+        Value, Viewport,
     };
     use std::collections::HashMap;
 
@@ -169,19 +194,49 @@ mod test {
                 "",
                 Media {
                     screen: Value::from("only screen and (max-width: 992px)"),
-                    blocks: vec![Block {
+                    entities: vec![CssEntity::Block(Block {
                         selectors: vec![Selector::Class("test".into())].into(),
                         parameters: {
                             let mut tmp = HashMap::new();
                             tmp.insert("min-height".into(), "68px".into());
                             tmp.into()
                         }
-                    }]
+                    })]
                     .into()
                 }
             ))
         )
     }
+
+    #[test]
+    fn test_supports() {
+        assert_eq!(
+            parse_supports(
+                r#"
+            @supports (-ms-ime-align: auto) {
+              .test {
+                min-height: 68px; }
+            }
+    "#
+            ),
+            Ok((
+                "",
+                Supports {
+                    conditions: Value::from("(-ms-ime-align: auto)"),
+                    entities: vec![CssEntity::Block(Block {
+                        selectors: vec![Selector::Class("test".into())].into(),
+                        parameters: {
+                            let mut tmp = HashMap::new();
+                            tmp.insert("min-height".into(), "68px".into());
+                            tmp.into()
+                        }
+                    })]
+                    .into()
+                }
+            ))
+        )
+    }
+
     #[test]
     fn test_keyframes() {
         assert_eq!(
@@ -198,6 +253,7 @@ mod test {
                 "",
                 Keyframes {
                     name: Value::from("important1"),
+                    webkit_prefix: false,
                     blocks: vec![
                         KeyframeBlock {
                             name: "from".into(),
@@ -205,7 +261,7 @@ mod test {
                                 let mut tmp = HashMap::new();
                                 tmp.insert("margin-top".into(), "50px".into());
                                 tmp.into()
-                            }
+                            },
                         },
                         KeyframeBlock {
                             name: "50%".into(),

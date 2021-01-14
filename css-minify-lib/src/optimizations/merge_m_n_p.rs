@@ -1,5 +1,5 @@
 use crate::optimizations::transformer::Transform;
-use crate::structure::{Block, Name, Value};
+use crate::structure::{Name, Parameters, Value};
 use nom::lib::std::fmt::Formatter;
 use std::fmt::Display;
 
@@ -12,38 +12,34 @@ pub struct Margin(Option<Value>, Option<Value>, Option<Value>, Option<Value>);
 pub struct Padding(Option<Value>, Option<Value>, Option<Value>, Option<Value>);
 
 impl Transform for Merge {
-    fn transform_block(&mut self, mut block: Block) -> Block {
+    fn transform_parameters(&mut self, mut parameters: Parameters) -> Parameters {
         let mut margin = Margin::default();
         let mut padding = Padding::default();
-        block.parameters.0.iter().for_each(|(name, val)| {
-            if !block.parameters.0.contains_key("margin") {
+        parameters.0.iter().for_each(|(name, val)| {
+            if !parameters.0.contains_key("margin") {
                 margin.add(name, val.clone());
             }
-            if !block.parameters.0.contains_key("padding") {
+            if !parameters.0.contains_key("padding") {
                 padding.add(name, val.clone());
             }
         });
 
         if margin.is_may_be_merged() {
-            block
-                .parameters
-                .insert(String::from("margin"), margin.to_string());
-            block.parameters.0.remove("margin-top");
-            block.parameters.0.remove("margin-bottom");
-            block.parameters.0.remove("margin-left");
-            block.parameters.0.remove("margin-right");
+            parameters.insert(String::from("margin"), margin.to_string());
+            parameters.0.remove("margin-top");
+            parameters.0.remove("margin-bottom");
+            parameters.0.remove("margin-left");
+            parameters.0.remove("margin-right");
         }
         if padding.is_may_be_merged() {
-            block
-                .parameters
-                .insert(String::from("padding"), padding.to_string());
-            block.parameters.0.remove("padding-top");
-            block.parameters.0.remove("padding-bottom");
-            block.parameters.0.remove("padding-left");
-            block.parameters.0.remove("padding-right");
+            parameters.insert(String::from("padding"), padding.to_string());
+            parameters.0.remove("padding-top");
+            parameters.0.remove("padding-bottom");
+            parameters.0.remove("padding-left");
+            parameters.0.remove("padding-right");
         }
 
-        block
+        parameters
     }
 }
 
@@ -146,6 +142,7 @@ impl Display for Padding {
     }
 }
 
+#[cfg(test)]
 mod test {
     use crate::optimizations::merge_m_n_p::Merge;
     use crate::optimizations::transformer::Transform;

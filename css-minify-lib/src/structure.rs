@@ -12,11 +12,18 @@ pub struct Block {
 #[derive(Clone, Eq, PartialEq, Debug, From, Into)]
 pub struct Media {
     pub screen: Name,
-    pub blocks: Blocks,
+    pub entities: CssEntities,
+}
+
+#[derive(Clone, Eq, PartialEq, Debug, From, Into)]
+pub struct Supports {
+    pub conditions: Name,
+    pub entities: CssEntities,
 }
 
 #[derive(Clone, Eq, PartialEq, Debug, From, Into)]
 pub struct Keyframes {
+    pub webkit_prefix: bool,
     pub name: Name,
     pub blocks: KeyframeBlocks,
 }
@@ -65,6 +72,7 @@ pub enum At {
 pub enum CssEntity {
     Block(Block),
     Media(Media),
+    Supports(Supports),
     FontFace(FontFace),
     Viewport(Viewport),
     Keyframes(Keyframes),
@@ -154,7 +162,13 @@ impl Display for KeyframeBlock {
 
 impl Display for Media {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "@media {}{{{}}}", self.screen, self.blocks)
+        write!(f, "@media {}{{{}}}", self.screen, self.entities)
+    }
+}
+
+impl Display for Supports {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "@supports {}{{{}}}", self.conditions, self.entities)
     }
 }
 
@@ -172,7 +186,11 @@ impl Display for Viewport {
 
 impl Display for Keyframes {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "@keyframes {}{{{}}}", self.name, self.blocks)
+        if self.webkit_prefix {
+            write!(f, "@-webkit-keyframes {}{{{}}}", self.name, self.blocks)
+        } else {
+            write!(f, "@keyframes {}{{{}}}", self.name, self.blocks)
+        }
     }
 }
 
@@ -181,6 +199,7 @@ impl Display for CssEntity {
         match self {
             CssEntity::Block(block) => write!(f, "{}", block),
             CssEntity::Media(media) => write!(f, "{}", media),
+            CssEntity::Supports(supports) => write!(f, "{}", supports),
             CssEntity::FontFace(font_face) => write!(f, "{}", font_face),
             CssEntity::Viewport(viewport) => write!(f, "{}", viewport),
             CssEntity::Keyframes(keyframes) => write!(f, "{}", keyframes),

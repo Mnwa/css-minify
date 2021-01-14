@@ -1,5 +1,5 @@
 use crate::optimizations::transformer::Transform;
-use crate::structure::{Block, Name, Value};
+use crate::structure::{Name, Parameters, Value};
 use nom::lib::std::fmt::Formatter;
 use std::fmt::Display;
 
@@ -7,7 +7,7 @@ use std::fmt::Display;
 pub struct MergeShortHand;
 
 impl Transform for MergeShortHand {
-    fn transform_block(&mut self, mut block: Block) -> Block {
+    fn transform_parameters(&mut self, mut parameters: Parameters) -> Parameters {
         let mut font = FontShortHand::default();
         let mut list = ListShortHand::default();
         let mut background = BackgroundShortHand::default();
@@ -15,94 +15,93 @@ impl Transform for MergeShortHand {
         let mut outline = OutlineShortHand::default();
         let mut transition = TransitionShortHand::default();
 
-        block.parameters.0.iter().for_each(|(name, value)| {
-            if !block.parameters.0.contains_key("font") {
+        parameters.0.iter().for_each(|(name, value)| {
+            if !parameters.0.contains_key("font") {
                 font.add(name, value.clone());
             }
-            if !block.parameters.0.contains_key("list-style") {
+            if !parameters.0.contains_key("list-style") {
                 list.add(name, value.clone());
             }
-            if !block.parameters.0.contains_key("background") {
+            if !parameters.0.contains_key("background") {
                 background.add(name, value.clone());
             }
-            if !block.parameters.0.contains_key("border") {
+            if !parameters.0.contains_key("border") {
                 border.add(name, value.clone());
             }
-            if !block.parameters.0.contains_key("outline") {
+            if !parameters.0.contains_key("outline") {
                 outline.add(name, value.clone());
             }
-            if !block.parameters.0.contains_key("transition") {
+            if !parameters.0.contains_key("transition") {
                 transition.add(name, value.clone());
             }
         });
 
         if font.is_maybe_shorted() {
-            block
-                .parameters
+            parameters
                 .0
                 .insert(String::from("font"), font.to_string().trim().to_string());
-            block.parameters.0.remove("font-style");
-            block.parameters.0.remove("font-variant");
-            block.parameters.0.remove("font-weight");
-            block.parameters.0.remove("font-size");
-            block.parameters.0.remove("line-height");
-            block.parameters.0.remove("font-family");
+            parameters.0.remove("font-style");
+            parameters.0.remove("font-variant");
+            parameters.0.remove("font-weight");
+            parameters.0.remove("font-size");
+            parameters.0.remove("line-height");
+            parameters.0.remove("font-family");
         }
 
         if list.is_maybe_shorted() {
-            block.parameters.0.insert(
+            parameters.0.insert(
                 String::from("list-style"),
                 list.to_string().trim().to_string(),
             );
-            block.parameters.0.remove("list-style-type");
-            block.parameters.0.remove("list-style-position");
-            block.parameters.0.remove("list-style-image");
+            parameters.0.remove("list-style-type");
+            parameters.0.remove("list-style-position");
+            parameters.0.remove("list-style-image");
         }
 
         if background.is_maybe_shorted() {
-            block.parameters.0.insert(
+            parameters.0.insert(
                 String::from("background"),
                 background.to_string().trim().to_string(),
             );
-            block.parameters.0.remove("background-attachment");
-            block.parameters.0.remove("background-color");
-            block.parameters.0.remove("background-position");
-            block.parameters.0.remove("background-repeat");
-            block.parameters.0.remove("background-image");
+            parameters.0.remove("background-attachment");
+            parameters.0.remove("background-color");
+            parameters.0.remove("background-position");
+            parameters.0.remove("background-repeat");
+            parameters.0.remove("background-image");
         }
 
         if border.is_maybe_shorted() {
-            block.parameters.0.insert(
+            parameters.0.insert(
                 String::from("border"),
                 border.to_string().trim().to_string(),
             );
-            block.parameters.0.remove("border-width");
-            block.parameters.0.remove("border-style");
-            block.parameters.0.remove("border-color");
+            parameters.0.remove("border-width");
+            parameters.0.remove("border-style");
+            parameters.0.remove("border-color");
         }
 
         if outline.is_maybe_shorted() {
-            block.parameters.0.insert(
+            parameters.0.insert(
                 String::from("outline"),
                 outline.to_string().trim().to_string(),
             );
-            block.parameters.0.remove("outline-width");
-            block.parameters.0.remove("outline-style");
-            block.parameters.0.remove("outline-color");
+            parameters.0.remove("outline-width");
+            parameters.0.remove("outline-style");
+            parameters.0.remove("outline-color");
         }
 
         if transition.is_maybe_shorted() {
-            block.parameters.0.insert(
+            parameters.0.insert(
                 String::from("transition"),
                 transition.to_string().trim().to_string(),
             );
-            block.parameters.0.remove("transition-property");
-            block.parameters.0.remove("transition-duration");
-            block.parameters.0.remove("transition-delay");
-            block.parameters.0.remove("transition-timing-function");
+            parameters.0.remove("transition-property");
+            parameters.0.remove("transition-duration");
+            parameters.0.remove("transition-delay");
+            parameters.0.remove("transition-timing-function");
         }
 
-        block
+        parameters
     }
 }
 
@@ -368,6 +367,7 @@ impl Display for TransitionShortHand {
     }
 }
 
+#[cfg(test)]
 mod test {
     use crate::optimizations::merge_shorthand::MergeShortHand;
     use crate::optimizations::transformer::Transform;
