@@ -3,11 +3,11 @@ use crate::parsers::parameters::parse_parameters;
 use crate::parsers::useless::{is_not_block_ending, non_useless, parse_to_block_open};
 use crate::structure::{
     At, CharsetAt, FontFace, ImportAt, KeyframeBlock, KeyframeBlocks, Keyframes, Media,
-    NamespaceAt, Supports, Value, Viewport,
+    NamespaceAt, Page, Supports, Value, Viewport,
 };
 use nom::branch::alt;
 use nom::bytes::complete::{is_a, is_not, tag};
-use nom::combinator::{into, map, map_parser, rest};
+use nom::combinator::{into, map, map_parser, opt, rest};
 use nom::multi::many0;
 use nom::sequence::{preceded, separated_pair, terminated, tuple};
 use nom::IResult;
@@ -22,6 +22,22 @@ pub fn parse_media(input: &str) -> IResult<&str, Media> {
             tag("}"),
         ))),
         |(_, screen, _, entities, _)| Media { screen, entities },
+    )(input)
+}
+
+pub fn parse_page(input: &str) -> IResult<&str, Page> {
+    map(
+        non_useless(tuple((
+            tag("@page"),
+            non_useless(opt(parse_to_block_open)),
+            tag("{"),
+            non_useless(parse_parameters),
+            tag("}"),
+        ))),
+        |(_, selectors, _, parameters, _)| Page {
+            selectors,
+            parameters,
+        },
     )(input)
 }
 
@@ -171,11 +187,11 @@ pub fn parse_import(input: &str) -> IResult<&str, ImportAt> {
 mod test {
     use crate::parsers::at::{
         parse_charset, parse_font_face, parse_import, parse_keyframes, parse_media,
-        parse_namespace, parse_supports, parse_viewport,
+        parse_namespace, parse_page, parse_supports, parse_viewport,
     };
     use crate::structure::{
-        Block, CssEntity, FontFace, KeyframeBlock, Keyframes, Media, Name, Selector, Supports,
-        Value, Viewport,
+        Block, CssEntity, FontFace, KeyframeBlock, Keyframes, Media, Name, Page, Selector,
+        Supports, Value, Viewport,
     };
     use std::collections::HashMap;
 
@@ -202,6 +218,30 @@ mod test {
                             tmp.into()
                         }
                     })]
+                    .into()
+                }
+            ))
+        )
+    }
+
+    #[test]
+    fn test_page() {
+        assert_eq!(
+            parse_page(
+                r#"
+                @page test {
+                    size: a3; }
+    "#
+            ),
+            Ok((
+                "",
+                Page {
+                    selectors: Some(Name::from("test")),
+                    parameters: {
+                        let mut tmp: HashMap<Name, Value> = HashMap::new();
+                        tmp.insert("size".to_string(), "a3".to_string());
+                        tmp
+                    }
                     .into()
                 }
             ))

@@ -69,6 +69,10 @@ pub trait Transform {
                 font_face.parameters = self.transform_parameters(font_face.parameters);
                 CssEntity::FontFace(font_face)
             }
+            CssEntity::Page(mut page) => {
+                page.parameters = self.transform_parameters(page.parameters);
+                CssEntity::Page(page)
+            }
             CssEntity::Viewport(mut viewport) => {
                 viewport.parameters = self.transform_parameters(viewport.parameters);
                 CssEntity::Viewport(viewport)

@@ -16,6 +16,12 @@ pub struct Media {
 }
 
 #[derive(Clone, Eq, PartialEq, Debug, From, Into)]
+pub struct Page {
+    pub selectors: Option<Name>,
+    pub parameters: Parameters,
+}
+
+#[derive(Clone, Eq, PartialEq, Debug, From, Into)]
 pub struct Supports {
     pub conditions: Name,
     pub entities: CssEntities,
@@ -72,6 +78,7 @@ pub enum At {
 pub enum CssEntity {
     Block(Block),
     Media(Media),
+    Page(Page),
     Supports(Supports),
     FontFace(FontFace),
     Viewport(Viewport),
@@ -166,6 +173,17 @@ impl Display for Media {
     }
 }
 
+impl Display for Page {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "@page")?;
+        if let Some(selectors) = &self.selectors {
+            write!(f, " {}", selectors)?
+        }
+        write!(f, " {{{}}}", self.parameters)?;
+        Ok(())
+    }
+}
+
 impl Display for Supports {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "@supports {}{{{}}}", self.conditions, self.entities)
@@ -199,6 +217,7 @@ impl Display for CssEntity {
         match self {
             CssEntity::Block(block) => write!(f, "{}", block),
             CssEntity::Media(media) => write!(f, "{}", media),
+            CssEntity::Page(page) => write!(f, "{}", page),
             CssEntity::Supports(supports) => write!(f, "{}", supports),
             CssEntity::FontFace(font_face) => write!(f, "{}", font_face),
             CssEntity::Viewport(viewport) => write!(f, "{}", viewport),
