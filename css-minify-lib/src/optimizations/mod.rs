@@ -37,14 +37,21 @@ impl Default for Minifier {
         transformer.register_parameter(TransformerParameterFn::Value(Box::new(|value| {
             optimize_color(&value).into()
         })));
-        transformer.register_parameter(TransformerParameterFn::Value(Box::new(|value| {
-            if value.starts_with("0") && Some(&b'.') != value.as_bytes().get(1) {
-                return Value::from("0");
+        transformer.register_parameter(TransformerParameterFn::Value(Box::new(|mut value| {
+            if value.starts_with("0px") {
+                value = format!("0{}", value.trim_start_matches("0px"))
+            }
+            if value.starts_with("0rem") {
+                value = format!("0{}", value.trim_start_matches("0rem"))
+            }
+            if value.starts_with("0.") {
+                value = format!(".{}", value.trim_start_matches("0."))
             }
             value
-        })));
-        transformer.register_parameter(TransformerParameterFn::Value(Box::new(|value| {
-            Value::from(value.trim_start_matches("0."))
+                .replace(" 0px", " 0")
+                .replace(" 0rem", " 0")
+                .replace(" 0.", " .")
+                .replace(", ", ",")
         })));
 
         transformer.register_parameter(TransformerParameterFn::Name(Box::new(|name| {
