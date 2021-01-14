@@ -261,20 +261,20 @@ impl Display for NamespaceAt {
         if let Some(prefix) = &self.prefix {
             write!(f, "{} ", prefix)?;
         }
-        write!(f, "{}", self.url)?;
+        write!(f, "{};", self.url)?;
         Ok(())
     }
 }
 
 impl Display for CharsetAt {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "@charset {}", self.charset)
+        write!(f, "@charset {};", self.charset)
     }
 }
 
 impl Display for ImportAt {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "@import {}", self.url)?;
+        write!(f, "@import {};", self.url)?;
         if let Some(media_queries) = &self.media_queries {
             write!(f, " {}", media_queries)?
         }

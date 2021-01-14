@@ -20,6 +20,9 @@ pub struct Minifier {
     merge_shorthand: MergeShortHand,
 }
 
+/**
+@TODO: fix !important bug
+*/
 impl Minifier {
     pub fn minify<'a>(&mut self, input: &'a str) -> MResult<'a> {
         parse_css(input)
