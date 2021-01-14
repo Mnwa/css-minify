@@ -7,8 +7,7 @@ use crate::structure::{
 };
 use nom::branch::alt;
 use nom::bytes::complete::{is_a, is_not, tag};
-use nom::character::complete::char;
-use nom::combinator::{into, map, map_parser, not, rest};
+use nom::combinator::{into, map, map_parser, rest};
 use nom::multi::many0;
 use nom::sequence::{preceded, separated_pair, terminated, tuple};
 use nom::IResult;

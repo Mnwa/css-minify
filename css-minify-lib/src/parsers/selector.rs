@@ -3,7 +3,7 @@ use crate::structure::{Selector, Selectors};
 use nom::branch::alt;
 use nom::bytes::complete::is_not;
 use nom::character::complete::char;
-use nom::combinator::{map, not};
+use nom::combinator::map;
 use nom::multi::separated_list1;
 use nom::sequence::preceded;
 use nom::IResult;
