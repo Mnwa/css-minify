@@ -20,9 +20,6 @@ pub struct Minifier {
     merge_shorthand: MergeShortHand,
 }
 
-/**
-@TODO: fix !important bug
-*/
 impl Minifier {
     pub fn minify<'a>(&mut self, input: &'a str) -> MResult<'a> {
         parse_css(input)
@@ -77,6 +74,22 @@ impl Display for MError<'_> {
 }
 
 impl<'a> Error for MError<'a> {}
+
+#[inline]
+pub(crate) fn if_some_has_important(input: Option<&Value>) -> bool {
+    if let Some(input) = input {
+        return input.ends_with("!important");
+    }
+    true
+}
+
+#[inline]
+pub(crate) fn none_or_has_important(input: Option<&Value>) -> bool {
+    if let Some(input) = input {
+        return input.ends_with("!important");
+    }
+    false
+}
 
 #[cfg(test)]
 mod test {

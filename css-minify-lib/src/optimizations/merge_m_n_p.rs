@@ -1,4 +1,5 @@
 use crate::optimizations::transformer::Transform;
+use crate::optimizations::{if_some_has_important, none_or_has_important};
 use crate::structure::{Name, Parameters, Value};
 use nom::lib::std::fmt::Formatter;
 use std::fmt::Display;
@@ -67,7 +68,25 @@ impl Margin {
     }
 
     fn is_may_be_merged(&self) -> bool {
-        self.0.is_some() && self.1.is_some() && self.2.is_some() && self.3.is_some()
+        self.0.is_some()
+            && self.1.is_some()
+            && self.2.is_some()
+            && self.3.is_some()
+            && (self.all_elements_has_important() || self.no_one_element_has_no_important())
+    }
+
+    fn all_elements_has_important(&self) -> bool {
+        if_some_has_important(self.0.as_ref())
+            && if_some_has_important(self.1.as_ref())
+            && if_some_has_important(self.2.as_ref())
+            && if_some_has_important(self.3.as_ref())
+    }
+
+    fn no_one_element_has_no_important(&self) -> bool {
+        !(none_or_has_important(self.0.as_ref())
+            || none_or_has_important(self.1.as_ref())
+            || none_or_has_important(self.2.as_ref())
+            || none_or_has_important(self.3.as_ref()))
     }
 }
 
@@ -95,50 +114,102 @@ impl Padding {
     }
 
     fn is_may_be_merged(&self) -> bool {
-        self.0.is_some() && self.1.is_some() && self.2.is_some() && self.3.is_some()
+        self.0.is_some()
+            && self.1.is_some()
+            && self.2.is_some()
+            && self.3.is_some()
+            && (self.all_elements_has_important() || self.no_one_element_has_no_important())
+    }
+
+    fn all_elements_has_important(&self) -> bool {
+        if_some_has_important(self.0.as_ref())
+            && if_some_has_important(self.1.as_ref())
+            && if_some_has_important(self.2.as_ref())
+            && if_some_has_important(self.3.as_ref())
+    }
+
+    fn no_one_element_has_no_important(&self) -> bool {
+        !(none_or_has_important(self.0.as_ref())
+            || none_or_has_important(self.1.as_ref())
+            || none_or_has_important(self.2.as_ref())
+            || none_or_has_important(self.3.as_ref()))
     }
 }
 
 impl Display for Margin {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         let (top, right, bottom, left) = (
-            self.0.clone().unwrap_or_else(|| String::from("auto")),
-            self.1.clone().unwrap_or_else(|| String::from("auto")),
-            self.2.clone().unwrap_or_else(|| String::from("auto")),
-            self.3.clone().unwrap_or_else(|| String::from("auto")),
+            self.0
+                .clone()
+                .map(|m| m.trim_end_matches("!important").trim().to_string())
+                .unwrap_or_else(|| String::from("auto")),
+            self.1
+                .clone()
+                .map(|m| m.trim_end_matches("!important").trim().to_string())
+                .unwrap_or_else(|| String::from("auto")),
+            self.2
+                .clone()
+                .map(|m| m.trim_end_matches("!important").trim().to_string())
+                .unwrap_or_else(|| String::from("auto")),
+            self.3
+                .clone()
+                .map(|m| m.trim_end_matches("!important").trim().to_string())
+                .unwrap_or_else(|| String::from("auto")),
         );
 
         if top == bottom && right == left && top == right {
-            return write!(f, "{}", top);
-        }
-        if top == bottom && right == left {
-            return write!(f, "{} {}", top, right);
-        }
-        if right == left {
-            return write!(f, "{} {} {}", top, right, bottom);
+            write!(f, "{}", top)?;
+        } else if top == bottom && right == left {
+            write!(f, "{} {}", top, right)?;
+        } else if right == left {
+            write!(f, "{} {} {}", top, right, bottom)?;
+        } else {
+            write!(f, "{} {} {} {}", top, right, bottom, left)?;
         }
 
-        write!(f, "{} {} {} {}", top, right, bottom, left)
+        if self.all_elements_has_important() {
+            write!(f, " !important")?;
+        }
+
+        Ok(())
     }
 }
 
 impl Display for Padding {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         let (top, right, bottom, left) = (
-            self.0.clone().unwrap_or_else(|| String::from("auto")),
-            self.1.clone().unwrap_or_else(|| String::from("auto")),
-            self.2.clone().unwrap_or_else(|| String::from("auto")),
-            self.3.clone().unwrap_or_else(|| String::from("auto")),
+            self.0
+                .clone()
+                .map(|m| m.trim_end_matches("!important").trim().to_string())
+                .unwrap_or_else(|| String::from("auto")),
+            self.1
+                .clone()
+                .map(|m| m.trim_end_matches("!important").trim().to_string())
+                .unwrap_or_else(|| String::from("auto")),
+            self.2
+                .clone()
+                .map(|m| m.trim_end_matches("!important").trim().to_string())
+                .unwrap_or_else(|| String::from("auto")),
+            self.3
+                .clone()
+                .map(|m| m.trim_end_matches("!important").trim().to_string())
+                .unwrap_or_else(|| String::from("auto")),
         );
 
-        if top == bottom && right == left {
-            return write!(f, "{} {}", top, right);
-        }
-        if right == left {
-            return write!(f, "{} {} {}", top, right, bottom);
+        if top == bottom && right == left && top == right {
+            write!(f, "{}", top)?;
+        } else if top == bottom && right == left {
+            write!(f, "{} {}", top, right)?;
+        } else if right == left {
+            write!(f, "{} {} {}", top, right, bottom)?;
+        } else {
+            write!(f, "{} {} {} {}", top, right, bottom, left)?;
         }
 
-        write!(f, "{} {} {} {}", top, right, bottom, left)
+        if self.all_elements_has_important() {
+            write!(f, " !important")?;
+        }
+        Ok(())
     }
 }
 

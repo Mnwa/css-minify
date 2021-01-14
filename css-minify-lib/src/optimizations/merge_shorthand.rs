@@ -1,4 +1,5 @@
 use crate::optimizations::transformer::Transform;
+use crate::optimizations::{if_some_has_important, none_or_has_important};
 use crate::structure::{Name, Parameters, Value};
 use nom::lib::std::fmt::Formatter;
 use std::fmt::Display;
@@ -117,7 +118,27 @@ struct FontShortHand {
 
 impl FontShortHand {
     fn is_maybe_shorted(&self) -> bool {
-        self.font_size.is_some() && self.font_family.is_some()
+        self.font_size.is_some()
+            && self.font_family.is_some()
+            && (self.all_elements_has_important() || self.no_one_element_has_no_important())
+    }
+
+    fn all_elements_has_important(&self) -> bool {
+        if_some_has_important(self.font_style.as_ref())
+            && if_some_has_important(self.font_variant.as_ref())
+            && if_some_has_important(self.font_weight.as_ref())
+            && if_some_has_important(self.font_size.as_ref())
+            && if_some_has_important(self.line_height.as_ref())
+            && if_some_has_important(self.font_family.as_ref())
+    }
+
+    fn no_one_element_has_no_important(&self) -> bool {
+        !(none_or_has_important(self.font_style.as_ref())
+            || none_or_has_important(self.font_variant.as_ref())
+            || none_or_has_important(self.font_weight.as_ref())
+            || none_or_has_important(self.font_size.as_ref())
+            || none_or_has_important(self.line_height.as_ref())
+            || none_or_has_important(self.font_family.as_ref()))
     }
 
     fn add(&mut self, name: &Name, value: Value) {
@@ -136,22 +157,25 @@ impl FontShortHand {
 impl Display for FontShortHand {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         if let Some(v) = &self.font_style {
-            write!(f, "{}", v)?;
+            write!(f, "{}", v.trim_end_matches("!important").trim())?;
         }
         if let Some(v) = &self.font_variant {
-            write!(f, " {}", v)?;
+            write!(f, " {}", v.trim_end_matches("!important").trim())?;
         }
         if let Some(v) = &self.font_weight {
-            write!(f, " {}", v)?;
+            write!(f, " {}", v.trim_end_matches("!important").trim())?;
         }
         if let Some(v) = &self.font_size {
-            write!(f, " {}", v)?;
+            write!(f, " {}", v.trim_end_matches("!important").trim())?;
         }
         if let Some(v) = &self.line_height {
-            write!(f, "/{}", v)?;
+            write!(f, "/{}", v.trim_end_matches("!important").trim())?;
         }
         if let Some(v) = &self.font_family {
-            write!(f, " {}", v)?;
+            write!(f, " {}", v.trim_end_matches("!important").trim())?;
+        }
+        if self.all_elements_has_important() {
+            write!(f, " !important")?;
         }
         Ok(())
     }
@@ -166,9 +190,22 @@ struct ListShortHand {
 
 impl ListShortHand {
     fn is_maybe_shorted(&self) -> bool {
-        self.list_style_type.is_some()
+        (self.list_style_type.is_some()
             || self.list_style_position.is_some()
-            || self.list_style_image.is_some()
+            || self.list_style_image.is_some())
+            && (self.all_elements_has_important() || self.no_one_element_has_no_important())
+    }
+
+    fn all_elements_has_important(&self) -> bool {
+        if_some_has_important(self.list_style_type.as_ref())
+            && if_some_has_important(self.list_style_position.as_ref())
+            && if_some_has_important(self.list_style_image.as_ref())
+    }
+
+    fn no_one_element_has_no_important(&self) -> bool {
+        !(none_or_has_important(self.list_style_type.as_ref())
+            || none_or_has_important(self.list_style_position.as_ref())
+            || none_or_has_important(self.list_style_image.as_ref()))
     }
 
     fn add(&mut self, name: &Name, value: Value) {
@@ -184,13 +221,16 @@ impl ListShortHand {
 impl Display for ListShortHand {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         if let Some(v) = &self.list_style_type {
-            write!(f, "{}", v)?;
+            write!(f, "{}", v.trim_end_matches("!important").trim())?;
         }
         if let Some(v) = &self.list_style_position {
-            write!(f, " {}", v)?;
+            write!(f, " {}", v.trim_end_matches("!important").trim())?;
         }
         if let Some(v) = &self.list_style_image {
-            write!(f, " {}", v)?;
+            write!(f, " {}", v.trim_end_matches("!important").trim())?;
+        }
+        if self.all_elements_has_important() {
+            write!(f, " !important")?;
         }
         Ok(())
     }
@@ -207,11 +247,28 @@ struct BackgroundShortHand {
 
 impl BackgroundShortHand {
     fn is_maybe_shorted(&self) -> bool {
-        self.background_color.is_some()
+        (self.background_color.is_some()
             || self.background_image.is_some()
             || self.background_repeat.is_some()
             || self.background_attachment.is_some()
-            || self.background_position.is_some()
+            || self.background_position.is_some())
+            && (self.all_elements_has_important() || self.no_one_element_has_no_important())
+    }
+
+    fn all_elements_has_important(&self) -> bool {
+        if_some_has_important(self.background_color.as_ref())
+            && if_some_has_important(self.background_image.as_ref())
+            && if_some_has_important(self.background_repeat.as_ref())
+            && if_some_has_important(self.background_attachment.as_ref())
+            && if_some_has_important(self.background_position.as_ref())
+    }
+
+    fn no_one_element_has_no_important(&self) -> bool {
+        !(none_or_has_important(self.background_color.as_ref())
+            || none_or_has_important(self.background_image.as_ref())
+            || none_or_has_important(self.background_repeat.as_ref())
+            || none_or_has_important(self.background_attachment.as_ref())
+            || none_or_has_important(self.background_position.as_ref()))
     }
 
     fn add(&mut self, name: &Name, value: Value) {
@@ -229,19 +286,22 @@ impl BackgroundShortHand {
 impl Display for BackgroundShortHand {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         if let Some(v) = &self.background_color {
-            write!(f, " {}", v)?;
+            write!(f, " {}", v.trim_end_matches("!important").trim())?;
         }
         if let Some(v) = &self.background_image {
-            write!(f, " {}", v)?;
+            write!(f, " {}", v.trim_end_matches("!important").trim())?;
         }
         if let Some(v) = &self.background_repeat {
-            write!(f, " {}", v)?;
+            write!(f, " {}", v.trim_end_matches("!important").trim())?;
         }
         if let Some(v) = &self.background_attachment {
-            write!(f, "{}", v)?;
+            write!(f, "{}", v.trim_end_matches("!important").trim())?;
         }
         if let Some(v) = &self.background_position {
-            write!(f, " {}", v)?;
+            write!(f, " {}", v.trim_end_matches("!important").trim())?;
+        }
+        if self.all_elements_has_important() {
+            write!(f, " !important")?;
         }
 
         Ok(())
@@ -257,7 +317,20 @@ struct BorderShortHand {
 
 impl BorderShortHand {
     fn is_maybe_shorted(&self) -> bool {
-        self.border_width.is_some() || self.border_style.is_some() || self.border_color.is_some()
+        (self.border_width.is_some() || self.border_style.is_some() || self.border_color.is_some())
+            && (self.all_elements_has_important() || self.no_one_element_has_no_important())
+    }
+
+    fn all_elements_has_important(&self) -> bool {
+        if_some_has_important(self.border_width.as_ref())
+            && if_some_has_important(self.border_style.as_ref())
+            && if_some_has_important(self.border_color.as_ref())
+    }
+
+    fn no_one_element_has_no_important(&self) -> bool {
+        !(none_or_has_important(self.border_width.as_ref())
+            || none_or_has_important(self.border_style.as_ref())
+            || none_or_has_important(self.border_color.as_ref()))
     }
 
     fn add(&mut self, name: &Name, value: Value) {
@@ -273,14 +346,18 @@ impl BorderShortHand {
 impl Display for BorderShortHand {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         if let Some(v) = &self.border_width {
-            write!(f, "{}", v)?;
+            write!(f, "{}", v.trim_end_matches("!important").trim())?;
         }
         if let Some(v) = &self.border_style {
-            write!(f, " {}", v)?;
+            write!(f, " {}", v.trim_end_matches("!important").trim())?;
         }
         if let Some(v) = &self.border_color {
-            write!(f, " {}", v)?;
+            write!(f, " {}", v.trim_end_matches("!important").trim())?;
         }
+        if self.all_elements_has_important() {
+            write!(f, " !important")?;
+        }
+
         Ok(())
     }
 }
@@ -294,7 +371,22 @@ struct OutlineShortHand {
 
 impl OutlineShortHand {
     fn is_maybe_shorted(&self) -> bool {
-        self.outline_width.is_some() || self.outline_style.is_some() || self.outline_color.is_some()
+        (self.outline_width.is_some()
+            || self.outline_style.is_some()
+            || self.outline_color.is_some())
+            && (self.all_elements_has_important() || self.no_one_element_has_no_important())
+    }
+
+    fn all_elements_has_important(&self) -> bool {
+        if_some_has_important(self.outline_width.as_ref())
+            && if_some_has_important(self.outline_style.as_ref())
+            && if_some_has_important(self.outline_color.as_ref())
+    }
+
+    fn no_one_element_has_no_important(&self) -> bool {
+        !(none_or_has_important(self.outline_width.as_ref())
+            || none_or_has_important(self.outline_style.as_ref())
+            || none_or_has_important(self.outline_color.as_ref()))
     }
 
     fn add(&mut self, name: &Name, value: Value) {
@@ -310,14 +402,18 @@ impl OutlineShortHand {
 impl Display for OutlineShortHand {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         if let Some(v) = &self.outline_width {
-            write!(f, "{}", v)?;
+            write!(f, "{}", v.trim_end_matches("!important").trim())?;
         }
         if let Some(v) = &self.outline_style {
-            write!(f, " {}", v)?;
+            write!(f, " {}", v.trim_end_matches("!important").trim())?;
         }
         if let Some(v) = &self.outline_color {
-            write!(f, " {}", v)?;
+            write!(f, " {}", v.trim_end_matches("!important").trim())?;
         }
+        if self.all_elements_has_important() {
+            write!(f, " !important")?;
+        }
+
         Ok(())
     }
 }
@@ -332,10 +428,25 @@ struct TransitionShortHand {
 
 impl TransitionShortHand {
     fn is_maybe_shorted(&self) -> bool {
-        self.transition_property.is_some()
+        (self.transition_property.is_some()
             || self.transition_duration.is_some()
             || self.transition_delay.is_some()
-            || self.transition_timing_function.is_some()
+            || self.transition_timing_function.is_some())
+            && (self.all_elements_has_important() || self.no_one_element_has_no_important())
+    }
+
+    fn all_elements_has_important(&self) -> bool {
+        if_some_has_important(self.transition_property.as_ref())
+            && if_some_has_important(self.transition_duration.as_ref())
+            && if_some_has_important(self.transition_delay.as_ref())
+            && if_some_has_important(self.transition_timing_function.as_ref())
+    }
+
+    fn no_one_element_has_no_important(&self) -> bool {
+        !(none_or_has_important(self.transition_property.as_ref())
+            || none_or_has_important(self.transition_duration.as_ref())
+            || none_or_has_important(self.transition_delay.as_ref())
+            || none_or_has_important(self.transition_timing_function.as_ref()))
     }
 
     fn add(&mut self, name: &Name, value: Value) {
@@ -352,17 +463,21 @@ impl TransitionShortHand {
 impl Display for TransitionShortHand {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         if let Some(v) = &self.transition_property {
-            write!(f, "{}", v)?;
+            write!(f, "{}", v.trim_end_matches("!important").trim())?;
         }
         if let Some(v) = &self.transition_duration {
-            write!(f, " {}", v)?;
+            write!(f, " {}", v.trim_end_matches("!important").trim())?;
         }
         if let Some(v) = &self.transition_delay {
-            write!(f, " {}", v)?;
+            write!(f, " {}", v.trim_end_matches("!important").trim())?;
         }
         if let Some(v) = &self.transition_timing_function {
-            write!(f, " {}", v)?;
+            write!(f, " {}", v.trim_end_matches("!important").trim())?;
         }
+        if self.all_elements_has_important() {
+            write!(f, " !important")?;
+        }
+
         Ok(())
     }
 }
