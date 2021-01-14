@@ -16,6 +16,28 @@ pub struct Media {
 }
 
 #[derive(Clone, Eq, PartialEq, Debug, From, Into)]
+pub struct Keyframes {
+    pub name: Name,
+    pub blocks: KeyframeBlocks,
+}
+
+#[derive(Clone, Eq, PartialEq, Debug, From, Into)]
+pub struct KeyframeBlock {
+    pub name: Name,
+    pub parameters: Parameters,
+}
+
+#[derive(Clone, Eq, PartialEq, Debug, From, Into)]
+pub struct FontFace {
+    pub parameters: Parameters,
+}
+
+#[derive(Clone, Eq, PartialEq, Debug, From, Into)]
+pub struct Viewport {
+    pub parameters: Parameters,
+}
+
+#[derive(Clone, Eq, PartialEq, Debug, From, Into)]
 pub struct NamespaceAt {
     prefix: Option<Value>,
     url: Value,
@@ -43,6 +65,9 @@ pub enum At {
 pub enum CssEntity {
     Block(Block),
     Media(Media),
+    FontFace(FontFace),
+    Viewport(Viewport),
+    Keyframes(Keyframes),
     At(At),
 }
 
@@ -54,6 +79,9 @@ pub struct Parameters(pub(crate) HashMap<Name, Value>);
 
 #[derive(Clone, Eq, PartialEq, Default, Debug, Deref, DerefMut, From, Into)]
 pub struct Blocks(pub(crate) Vec<Block>);
+
+#[derive(Clone, Eq, PartialEq, Default, Debug, Deref, DerefMut, From, Into)]
+pub struct KeyframeBlocks(pub(crate) Vec<KeyframeBlock>);
 
 #[derive(Clone, Eq, PartialEq, Default, Debug, Deref, DerefMut, From, Into)]
 pub struct CssEntities(pub(crate) Vec<CssEntity>);
@@ -118,9 +146,33 @@ impl Display for Block {
     }
 }
 
+impl Display for KeyframeBlock {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}{{{}}}", self.name, self.parameters)
+    }
+}
+
 impl Display for Media {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "@media {}{{{}}}", self.screen, self.blocks)
+    }
+}
+
+impl Display for FontFace {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "@font-face {{{}}}", self.parameters)
+    }
+}
+
+impl Display for Viewport {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "@viewport {{{}}}", self.parameters)
+    }
+}
+
+impl Display for Keyframes {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "@keyframes {}{{{}}}", self.name, self.blocks)
     }
 }
 
@@ -129,12 +181,29 @@ impl Display for CssEntity {
         match self {
             CssEntity::Block(block) => write!(f, "{}", block),
             CssEntity::Media(media) => write!(f, "{}", media),
+            CssEntity::FontFace(font_face) => write!(f, "{}", font_face),
+            CssEntity::Viewport(viewport) => write!(f, "{}", viewport),
+            CssEntity::Keyframes(keyframes) => write!(f, "{}", keyframes),
             CssEntity::At(at) => write!(f, "{}", at),
         }
     }
 }
 
 impl Display for Blocks {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            self.0
+                .iter()
+                .map(|block| format!("{}", block))
+                .collect::<Vec<String>>()
+                .join("")
+        )
+    }
+}
+
+impl Display for KeyframeBlocks {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(
             f,

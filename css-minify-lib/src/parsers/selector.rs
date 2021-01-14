@@ -1,4 +1,4 @@
-use crate::parsers::useless::non_useless;
+use crate::parsers::useless::{is_not_block_ending, non_useless};
 use crate::structure::{Selector, Selectors};
 use nom::branch::alt;
 use nom::bytes::complete::is_not;
@@ -10,10 +10,7 @@ use nom::IResult;
 
 pub fn parse_selectors(input: &str) -> IResult<&str, Selectors> {
     map(
-        preceded(
-            not(alt((char('@'), char('{'), char('}')))),
-            separated_list1(char(','), non_useless(parse_selector)),
-        ),
+        is_not_block_ending(separated_list1(char(','), non_useless(parse_selector))),
         |selectors| selectors.into(),
     )(input)
 }

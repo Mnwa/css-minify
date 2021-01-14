@@ -1,4 +1,4 @@
-use crate::parsers::at::{parse_at, parse_media};
+use crate::parsers::at::{parse_at, parse_font_face, parse_keyframes, parse_media, parse_viewport};
 use crate::parsers::block::parse_block;
 use crate::parsers::useless::non_useless;
 use crate::structure::{CssEntities, CssEntity};
@@ -12,5 +12,12 @@ pub fn parse_css(input: &str) -> IResult<&str, CssEntities> {
 }
 
 pub fn parse_entity(input: &str) -> IResult<&str, CssEntity> {
-    alt((into(parse_media), into(parse_at), into(parse_block)))(input)
+    alt((
+        into(parse_media),
+        into(parse_at),
+        into(parse_keyframes),
+        into(parse_font_face),
+        into(parse_viewport),
+        into(parse_block),
+    ))(input)
 }
