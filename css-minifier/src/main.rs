@@ -1,5 +1,5 @@
 use clap::Clap;
-use css_minify_lib::optimizations::{Level, Minifier};
+use css_minify::optimizations::{Level, Minifier};
 use indoc::indoc;
 use std::fs::{read_to_string, write};
 

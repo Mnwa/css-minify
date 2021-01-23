@@ -1,6 +1,6 @@
 [workspace]
 
 members = [
-    "css-minify-lib",
-    "css-minify-bin",
+    "css-minify",
+    "css-minifier",
 ]
