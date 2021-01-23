@@ -68,11 +68,11 @@ mod test {
     fn test_rgb() {
         assert_eq!(
             parse_rgb("rgb(255, 255, /* lol */ 255 )"),
-            Ok(("", Color("#FFF".into())))
+            Ok(("", Color("#fff".into())))
         )
     }
     #[test]
     fn test_hex() {
-        assert_eq!(parse_hex("#fff"), Ok(("", Color("#FFF".into()))))
+        assert_eq!(parse_hex("#fff"), Ok(("", Color("#fff".into()))))
     }
 }

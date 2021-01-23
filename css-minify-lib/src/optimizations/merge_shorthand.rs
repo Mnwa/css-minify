@@ -572,7 +572,7 @@ mod test {
                 selectors: Selectors::default(),
                 parameters: {
                     let mut map = HashMap::new();
-                    map.insert("background".into(), "#000 !important".into());
+                    map.insert("background".into(), "#000!important".into());
                     Parameters(map)
                 },
             }

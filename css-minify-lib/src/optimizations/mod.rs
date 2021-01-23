@@ -1,9 +1,11 @@
 mod color;
+mod media;
 mod merge_m_n_p;
 mod merge_shorthand;
 mod transformer;
 
 use crate::optimizations::color::optimize_color;
+use crate::optimizations::media::MediaOptimizer;
 use crate::optimizations::merge_m_n_p::Merge;
 use crate::optimizations::merge_shorthand::MergeShortHand;
 use crate::optimizations::transformer::{Transform, Transformer, TransformerParameterFn};
@@ -18,6 +20,7 @@ pub struct Minifier {
     transformer: Transformer,
     merge_m_n_p: Merge,
     merge_shorthand: MergeShortHand,
+    media: MediaOptimizer,
 }
 
 impl Minifier {
@@ -27,6 +30,7 @@ impl Minifier {
             .map(|(other, blocks)| (other, self.transformer.transform_many(blocks)))
             .map(|(other, blocks)| (other, self.merge_m_n_p.transform_many(blocks)))
             .map(|(other, blocks)| (other, self.merge_shorthand.transform_many(blocks)))
+            .map(|(other, blocks)| (other, self.media.transform_many(blocks)))
             .map(|(other, blocks)| (other, blocks.to_string()))
     }
 }
@@ -52,6 +56,7 @@ impl Default for Minifier {
                 .replace(" 0rem", " 0")
                 .replace(" 0.", " .")
                 .replace(", ", ",")
+                .replace(" !important", "!important")
         })));
 
         transformer.register_parameter(TransformerParameterFn::Name(Box::new(|name| {
@@ -60,11 +65,13 @@ impl Default for Minifier {
 
         let merge_m_n_p = Merge::default();
         let merge_shorthand = MergeShortHand::default();
+        let media = MediaOptimizer::default();
 
         Minifier {
             merge_m_n_p,
             merge_shorthand,
             transformer,
+            media,
         }
     }
 }
@@ -120,7 +127,7 @@ mod test {
                 }
             "#
             ),
-            Ok(("", "#some_id,input{color:white;padding:5px 3px}#some_id_2,.class{color:#FFF;padding:5px 4px}".into()))
+            Ok(("", "#some_id,input{color:white;padding:5px 3px}#some_id_2,.class{color:#fff;padding:5px 4px}".into()))
         )
     }
 }
