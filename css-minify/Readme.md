@@ -1,1 +1,0 @@
-/Users/mnwa/CLionProjects/css-minify/Readme.md
