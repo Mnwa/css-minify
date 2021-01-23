@@ -1,4 +1,10 @@
 # CSS minify
+[![](https://github.com/Mnwa/css-minify/workflows/css-minify/badge.svg?branch=master)](https://github.com/Mnwa/css-minify/actions?query=workflow%3Acss-minify)
+[![](https://github.com/Mnwa/css-minify/workflows/clippy/badge.svg?branch=master)](https://github.com/Mnwa/css-minify/actions?query=workflow%3Aclippy)
+[![](https://docs.rs/css-minify/badge.svg)](https://docs.rs/css-minify/)
+[![](https://img.shields.io/crates/v/css-minify.svg)](https://crates.io/crates/css-minify)
+[![](https://img.shields.io/crates/d/css-minify.svg)](https://crates.io/crates/css-minify)
+
 CSS minification library based on `nom`.
 This library parses css input, minifies it and applies some level-dependent optimizations to it.
 
@@ -28,6 +34,11 @@ fn main() {
 ```
 
 # CSS minifier
+[![](https://github.com/Mnwa/css-minifier/workflows/css-minifier/badge.svg?branch=master)](https://github.com/Mnwa/css-minifier/actions?query=workflow%3Acss-minifier)
+[![](https://docs.rs/css-minifier/badge.svg)](https://docs.rs/css-minifier/)
+[![](https://img.shields.io/crates/v/css-minifier.svg)](https://crates.io/crates/css-minifier)
+[![](https://img.shields.io/crates/d/css-minifier.svg)](https://crates.io/crates/css-minifier)
+
 CLI wrapper for css-minify library.
 
 ```

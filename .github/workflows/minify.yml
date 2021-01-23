@@ -1,4 +1,4 @@
-name: build
+name: minify
 
 on:
   push:
@@ -13,6 +13,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: Build
       run: cargo build --verbose
+      working-directory: ./css-minify
 
   test:
     runs-on: ubuntu-latest
@@ -20,6 +21,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: Run tests
       run: cargo test
+      working-directory: ./css-minify
 
 
   codeStyle:
@@ -28,13 +30,4 @@ jobs:
     - uses: actions/checkout@v2
     - name: Run cargo fmt
       run: cargo fmt --all -- --check
-
-  clippy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - run: rustup component add clippy
-      - uses: actions-rs/clippy-check@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          args: --all-features
+      working-directory: ./css-minify
