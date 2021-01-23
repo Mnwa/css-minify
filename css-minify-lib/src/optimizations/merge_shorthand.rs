@@ -175,7 +175,7 @@ impl Display for FontShortHand {
             write!(f, " {}", v.trim_end_matches("!important").trim())?;
         }
         if self.all_elements_has_important() {
-            write!(f, " !important")?;
+            write!(f, "!important")?;
         }
         Ok(())
     }
@@ -230,7 +230,7 @@ impl Display for ListShortHand {
             write!(f, " {}", v.trim_end_matches("!important").trim())?;
         }
         if self.all_elements_has_important() {
-            write!(f, " !important")?;
+            write!(f, "!important")?;
         }
         Ok(())
     }
@@ -301,7 +301,7 @@ impl Display for BackgroundShortHand {
             write!(f, " {}", v.trim_end_matches("!important").trim())?;
         }
         if self.all_elements_has_important() {
-            write!(f, " !important")?;
+            write!(f, "!important")?;
         }
 
         Ok(())
@@ -355,7 +355,7 @@ impl Display for BorderShortHand {
             write!(f, " {}", v.trim_end_matches("!important").trim())?;
         }
         if self.all_elements_has_important() {
-            write!(f, " !important")?;
+            write!(f, "!important")?;
         }
 
         Ok(())
@@ -411,7 +411,7 @@ impl Display for OutlineShortHand {
             write!(f, " {}", v.trim_end_matches("!important").trim())?;
         }
         if self.all_elements_has_important() {
-            write!(f, " !important")?;
+            write!(f, "!important")?;
         }
 
         Ok(())
@@ -475,7 +475,7 @@ impl Display for TransitionShortHand {
             write!(f, " {}", v.trim_end_matches("!important").trim())?;
         }
         if self.all_elements_has_important() {
-            write!(f, " !important")?;
+            write!(f, "!important")?;
         }
 
         Ok(())
@@ -547,6 +547,32 @@ mod test {
                         "background".into(),
                         "#000 url(images/bg.gif) no-repeat left top".into(),
                     );
+                    Parameters(map)
+                },
+            }
+            .into()
+        )
+    }
+
+    #[test]
+    fn test_background_important() {
+        assert_eq!(
+            MergeShortHand::default().transform(
+                Block {
+                    selectors: Selectors::default(),
+                    parameters: {
+                        let mut map = HashMap::new();
+                        map.insert("background-color".into(), "#000 !important".into());
+                        Parameters(map)
+                    },
+                }
+                .into()
+            ),
+            Block {
+                selectors: Selectors::default(),
+                parameters: {
+                    let mut map = HashMap::new();
+                    map.insert("background".into(), "#000 !important".into());
                     Parameters(map)
                 },
             }

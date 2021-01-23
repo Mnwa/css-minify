@@ -168,7 +168,7 @@ impl Display for Margin {
         }
 
         if self.all_elements_has_important() {
-            write!(f, " !important")?;
+            write!(f, "!important")?;
         }
 
         Ok(())
@@ -207,7 +207,7 @@ impl Display for Padding {
         }
 
         if self.all_elements_has_important() {
-            write!(f, " !important")?;
+            write!(f, "!important")?;
         }
         Ok(())
     }

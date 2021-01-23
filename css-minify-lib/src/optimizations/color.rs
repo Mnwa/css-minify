@@ -12,7 +12,12 @@ pub struct Color(String);
 
 pub fn optimize_color(input: &str) -> Color {
     let color = alt((parse_hex, parse_rgb))(input)
-        .map(|(_, color)| color)
+        .map(|(postfix, mut color)| {
+            if postfix.trim() == "!important" {
+                color.0 += "!important"
+            }
+            color
+        })
         .unwrap_or_else(|_| Color(input.into()));
     color
 }
@@ -20,9 +25,9 @@ pub fn optimize_color(input: &str) -> Color {
 pub fn parse_hex(input: &str) -> IResult<&str, Color> {
     map(recognize(preceded(tag("#"), hex_digit1)), |color: &str| {
         if color[1..4] == color[4..] {
-            return Color((&color[..4]).to_uppercase());
+            return Color((&color[..4]).to_lowercase());
         }
-        Color(color.to_uppercase())
+        Color(color.to_lowercase())
     })(input)
 }
 
@@ -45,9 +50,9 @@ pub fn parse_rgb(input: &str) -> IResult<&str, Color> {
                     );
 
                     if color[1..4] == color[4..] {
-                        return Color((&color[..4]).into());
+                        return Color((&color[..4]).to_lowercase());
                     }
-                    Color(color.into())
+                    Color(color.to_lowercase())
                 },
             ),
         ),

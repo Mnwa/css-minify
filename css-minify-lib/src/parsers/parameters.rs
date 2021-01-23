@@ -60,4 +60,20 @@ mod test {
             }))
         )
     }
+
+    #[test]
+    fn test_parameters_important() {
+        assert_eq!(
+            parse_parameters(
+                "
+                background-color: #f64e60 !important; 
+                "
+            ),
+            Ok(("", {
+                let mut tmp = HashMap::new();
+                tmp.insert("background-color".into(), "#f64e60 !important".into());
+                tmp.into()
+            }))
+        )
+    }
 }
