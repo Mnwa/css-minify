@@ -12,6 +12,8 @@ use crate::optimizations::transformer::{Transform, Transformer, TransformerParam
 use crate::parsers::css_entity::parse_css;
 use crate::structure::Value;
 use derive_more::{From, Into};
+use nom::lib::std::fmt::Debug;
+use nom::lib::std::str::FromStr;
 use std::error::Error;
 use std::fmt::Display;
 use std::fmt::Formatter;
@@ -24,14 +26,24 @@ pub struct Minifier {
 }
 
 impl Minifier {
-    pub fn minify<'a>(&mut self, input: &'a str) -> MResult<'a> {
-        parse_css(input)
-            .map_err(MError::from)
-            .map(|(other, blocks)| (other, self.transformer.transform_many(blocks)))
-            .map(|(other, blocks)| (other, self.merge_m_n_p.transform_many(blocks)))
-            .map(|(other, blocks)| (other, self.merge_shorthand.transform_many(blocks)))
-            .map(|(other, blocks)| (other, self.media.transform_many(blocks)))
-            .map(|(other, blocks)| (other, blocks.to_string()))
+    pub fn minify<'a>(&mut self, input: &'a str, level: Level) -> MResult<'a> {
+        let mut result = parse_css(input).map_err(MError::from);
+
+        if level >= Level::One {
+            result = result.map(|(other, blocks)| (other, self.transformer.transform_many(blocks)))
+        }
+
+        if level >= Level::Two {
+            result = result
+                .map(|(other, blocks)| (other, self.merge_m_n_p.transform_many(blocks)))
+                .map(|(other, blocks)| (other, self.merge_shorthand.transform_many(blocks)))
+        }
+
+        if level == Level::Three {
+            result = result.map(|(other, blocks)| (other, self.media.transform_many(blocks)))
+        }
+
+        result.map(|(other, blocks)| (other, blocks.to_string()))
     }
 }
 
@@ -76,6 +88,64 @@ impl Default for Minifier {
     }
 }
 
+/// Transforming level
+#[derive(Ord, PartialOrd, Eq, PartialEq, Debug, Copy, Clone)]
+pub enum Level {
+    /// Disable transformer
+    Zero = 0,
+    /// Remove whitespaces, replace `0.` to `.` and others non dangerous optimizations
+    /// It's default level
+    One = 1,
+    /// Level One + shortcuts (margins, paddings, backgrounds and etc)
+    /// In mostly cases it's non dangerous optimizations, but be careful
+    Two = 2,
+    /// Level Two + merge @media and css blocks with equal screen/selectors
+    /// It is a danger optimizations, because ordering of your css code may be changed
+    Three = 3,
+}
+
+impl Default for Level {
+    fn default() -> Self {
+        Self::One
+    }
+}
+
+impl FromStr for Level {
+    type Err = ParseLevelError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "0" => Ok(Level::Zero),
+            "1" => Ok(Level::One),
+            "2" => Ok(Level::Two),
+            "3" => Ok(Level::Three),
+            _ => Err(ParseLevelError),
+        }
+    }
+}
+
+#[derive(Default, Copy, Clone)]
+pub struct ParseLevelError;
+
+impl Display for ParseLevelError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Input must be number from 0 to 3 values")
+    }
+}
+
+impl Debug for ParseLevelError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("ParseLevelError")
+            .field(
+                "message",
+                &"Input must be number from 0 to 3 values".to_string(),
+            )
+            .finish()
+    }
+}
+
+impl Error for ParseLevelError {}
+
 pub type MResult<'a> = Result<(&'a str, String), MError<'a>>;
 
 #[derive(Debug, From, Into, PartialEq)]
@@ -107,7 +177,7 @@ pub(crate) fn none_or_has_important(input: Option<&Value>) -> bool {
 
 #[cfg(test)]
 mod test {
-    use crate::optimizations::Minifier;
+    use crate::optimizations::{Level, Minifier};
 
     #[test]
     fn test_minify() {
@@ -126,6 +196,7 @@ mod test {
                     Color: rgb(255, 255, 255);
                 }
             "#
+                    Level::Three
             ),
             Ok(("", "#some_id,input{color:white;padding:5px 3px}#some_id_2,.class{color:#fff;padding:5px 4px}".into()))
         )

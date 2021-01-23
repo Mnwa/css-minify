@@ -10,3 +10,4 @@ edition = "2018"
 "css-minify-lib" = { version = "0.1", path = "../css-minify-lib" }
 clap = "3.0.0-beta.2"
 shellexpand = "2.1"
+indoc = "1.0"

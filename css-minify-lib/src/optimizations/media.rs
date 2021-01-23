@@ -1,6 +1,6 @@
 use crate::optimizations::transformer::Transform;
 use crate::structure::{CssEntities, CssEntity, Media, Parameters};
-use nom::lib::std::collections::HashMap;
+use indexmap::map::IndexMap;
 
 #[derive(Default, Debug, Clone)]
 pub struct MediaOptimizer;
@@ -21,7 +21,7 @@ impl Transform for MediaOptimizer {
     }
 
     fn transform_many(&mut self, blocks: CssEntities) -> CssEntities {
-        let mut media = HashMap::new();
+        let mut media = IndexMap::new();
         blocks
             .0
             .iter()
