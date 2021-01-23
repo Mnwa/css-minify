@@ -1,4 +1,4 @@
-#CSS minify
+# CSS minify
 CSS minification library based on `nom`.
 This library parses css input, minifies it and applies some level-dependent optimizations to it.
 
