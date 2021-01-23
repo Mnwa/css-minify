@@ -1,11 +1,11 @@
 use crate::optimizations::transformer::Transform;
-use crate::structure::{CssEntities, CssEntity, Media, Parameters};
+use crate::structure::{CssEntities, CssEntity, Media, Parameters, Supports};
 use indexmap::map::IndexMap;
 
 #[derive(Default, Debug, Clone)]
-pub struct MediaOptimizer;
+pub struct MergeMedia;
 
-impl Transform for MediaOptimizer {
+impl Transform for MergeMedia {
     fn transform_parameters(&mut self, parameters: Parameters) -> Parameters {
         parameters
     }
@@ -20,54 +20,65 @@ impl Transform for MediaOptimizer {
         }
     }
 
-    fn transform_many(&mut self, blocks: CssEntities) -> CssEntities {
+    fn transform_many(&mut self, entities: CssEntities) -> CssEntities {
         let mut media = IndexMap::new();
-        blocks
+        entities
             .0
             .iter()
             .filter_map(|e| match e {
                 CssEntity::Media(m) => Some(m),
                 _ => None,
             })
-            .for_each(|e| {
+            .for_each(|m| {
                 media
-                    .entry(e.screen.clone())
+                    .entry(m.screen.clone())
                     .and_modify(|media: &mut Media| {
                         media
                             .entities
                             .0
-                            .append(&mut self.transform_many(e.entities.clone()).0);
+                            .append(&mut self.transform_many(m.entities.clone()).0);
                     })
-                    .or_insert(e.clone());
+                    .or_insert(m.clone());
             });
-        let mut entities = CssEntities(
-            blocks
+        let mut non_media_entities = CssEntities(
+            entities
                 .0
                 .into_iter()
                 .filter(|e| !matches!(e, CssEntity::Media(_)))
+                .map(|e| match e {
+                    CssEntity::Supports(Supports {
+                        conditions,
+                        entities,
+                    }) => Supports {
+                        conditions,
+                        entities: self.transform_many(entities),
+                    }
+                    .into(),
+                    entity => entity,
+                })
                 .collect(),
         );
-        entities.0.append(
+        non_media_entities.0.append(
             &mut media
                 .into_iter()
                 .map(|(_, m)| m)
                 .map(|m| self.transform(m.into()))
                 .collect(),
         );
-        entities
+        non_media_entities
     }
 }
 
 #[cfg(test)]
 mod test {
-    use crate::optimizations::media::MediaOptimizer;
+    use crate::optimizations::merge_media::MergeMedia;
     use crate::optimizations::transformer::Transform;
     use crate::structure::{Block, CssEntities, CssEntity, Media, Selector, Value};
 
     #[test]
     fn test_media() {
         assert_eq!(
-            MediaOptimizer::default().transform_many(CssEntities(vec![
+            MergeMedia::default().transform_many(CssEntities(vec![
                 CssEntity::Media(Media {
                     screen: Value::from("only screen and (max-width: 992px)"),
                     entities: vec![CssEntity::Block(Block {

@@ -1,12 +1,14 @@
 mod color;
-mod media;
+mod merge_blocks;
 mod merge_m_n_p;
+mod merge_media;
 mod merge_shorthand;
 mod transformer;
 
 use crate::optimizations::color::optimize_color;
-use crate::optimizations::media::MediaOptimizer;
+use crate::optimizations::merge_blocks::MergeBlocks;
 use crate::optimizations::merge_m_n_p::Merge;
+use crate::optimizations::merge_media::MergeMedia;
 use crate::optimizations::merge_shorthand::MergeShortHand;
 use crate::optimizations::transformer::{Transform, Transformer, TransformerParameterFn};
 use crate::parsers::css_entity::parse_css;
@@ -22,15 +24,18 @@ pub struct Minifier {
     transformer: Transformer,
     merge_m_n_p: Merge,
     merge_shorthand: MergeShortHand,
-    media: MediaOptimizer,
+    media: MergeMedia,
+    blocks: MergeBlocks,
 }
 
 impl Minifier {
     pub fn minify<'a>(&mut self, input: &'a str, level: Level) -> MResult<'a> {
         let mut result = parse_css(input).map_err(MError::from);
 
-        if level >= Level::One {
-            result = result.map(|(other, blocks)| (other, self.transformer.transform_many(blocks)))
+        if level == Level::Three {
+            result = result
+                .map(|(other, blocks)| (other, self.blocks.transform_many(blocks)))
+                .map(|(other, blocks)| (other, self.media.transform_many(blocks)))
         }
 
         if level >= Level::Two {
@@ -39,8 +44,8 @@ impl Minifier {
                 .map(|(other, blocks)| (other, self.merge_shorthand.transform_many(blocks)))
         }
 
-        if level == Level::Three {
-            result = result.map(|(other, blocks)| (other, self.media.transform_many(blocks)))
+        if level >= Level::One {
+            result = result.map(|(other, blocks)| (other, self.transformer.transform_many(blocks)))
         }
 
         result.map(|(other, blocks)| (other, blocks.to_string()))
@@ -77,13 +82,15 @@ impl Default for Minifier {
 
         let merge_m_n_p = Merge::default();
         let merge_shorthand = MergeShortHand::default();
-        let media = MediaOptimizer::default();
+        let media = MergeMedia::default();
+        let blocks = MergeBlocks::default();
 
         Minifier {
             merge_m_n_p,
             merge_shorthand,
             transformer,
             media,
+            blocks,
         }
     }
 }
@@ -195,7 +202,7 @@ mod test {
                     padding: 5px 4px; /* Mega comment */
                     Color: rgb(255, 255, 255);
                 }
-            "#
+            "#,
                     Level::Three
             ),
             Ok(("", "#some_id,input{color:white;padding:5px 3px}#some_id_2,.class{color:#fff;padding:5px 4px}".into()))
