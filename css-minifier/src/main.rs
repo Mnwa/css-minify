@@ -40,16 +40,9 @@ fn main() {
             .to_string(),
     )
     .expect("cannot open input file");
-    let (other_input, minified_css) = minifier.minify(&input_file, level).unwrap();
+    let minified_css = minifier.minify(&input_file, level).unwrap();
 
     if let Some(output) = output {
-        if !other_input.is_empty() {
-            println!(
-                "There is chunk of content which was not parsed: \n{}",
-                other_input
-            )
-        }
-
         write(
             shellexpand::full(&output)
                 .expect("fail to parse output path")

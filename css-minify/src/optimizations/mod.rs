@@ -20,6 +20,7 @@ use std::error::Error;
 use std::fmt::Display;
 use std::fmt::Formatter;
 
+/// Struct which stores all optimizations from css minify lib
 pub struct Minifier {
     transformer: Transformer,
     merge_m_n_p: Merge,
@@ -29,26 +30,29 @@ pub struct Minifier {
 }
 
 impl Minifier {
+    /// Minify css input and return result with minified css string
     pub fn minify<'a>(&mut self, input: &'a str, level: Level) -> MResult<'a> {
-        let mut result = parse_css(input).map_err(MError::from);
+        let mut result = parse_css(input)
+            .map(|(_, blocks)| blocks)
+            .map_err(MError::from);
 
         if level == Level::Three {
             result = result
-                .map(|(other, blocks)| (other, self.blocks.transform_many(blocks)))
-                .map(|(other, blocks)| (other, self.media.transform_many(blocks)))
+                .map(|blocks| self.blocks.transform_many(blocks))
+                .map(|blocks| self.media.transform_many(blocks))
         }
 
         if level >= Level::Two {
             result = result
-                .map(|(other, blocks)| (other, self.merge_m_n_p.transform_many(blocks)))
-                .map(|(other, blocks)| (other, self.merge_shorthand.transform_many(blocks)))
+                .map(|blocks| self.merge_m_n_p.transform_many(blocks))
+                .map(|blocks| self.merge_shorthand.transform_many(blocks))
         }
 
         if level >= Level::One {
-            result = result.map(|(other, blocks)| (other, self.transformer.transform_many(blocks)))
+            result = result.map(|blocks| self.transformer.transform_many(blocks))
         }
 
-        result.map(|(other, blocks)| (other, blocks.to_string()))
+        result.map(|blocks| blocks.to_string())
     }
 }
 
@@ -153,7 +157,7 @@ impl Debug for ParseLevelError {
 
 impl Error for ParseLevelError {}
 
-pub type MResult<'a> = Result<(&'a str, String), MError<'a>>;
+pub type MResult<'a> = Result<String, MError<'a>>;
 
 #[derive(Debug, From, Into, PartialEq)]
 pub struct MError<'a>(nom::Err<nom::error::Error<&'a str>>);
@@ -205,7 +209,7 @@ mod test {
             "#,
                     Level::Three
             ),
-            Ok(("", "#some_id,input{color:white;padding:5px 3px}#some_id_2,.class{color:#fff;padding:5px 4px}".into()))
+            Ok("#some_id,input{color:white;padding:5px 3px}#some_id_2,.class{color:#fff;padding:5px 4px}".into())
         )
     }
 }
