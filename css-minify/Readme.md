@@ -65,3 +65,8 @@ OPTIONS:
                               [default: 1]
     -o, --output <output>    output to optimized variant
 ```
+
+Example
+```bash
+css-minifier -i "~/test.css" -o "~/test.min.css" -l 3
+```
