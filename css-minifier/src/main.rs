@@ -4,7 +4,7 @@ use indoc::indoc;
 use std::fs::{read_to_string, write};
 
 #[derive(Clap)]
-#[clap(version = "1.0", author = "Mnwa")]
+#[clap(version = "0.1", author = "Mnwa")]
 struct Opts {
     #[clap(short, long, about = "css which will be minified")]
     input: String,
