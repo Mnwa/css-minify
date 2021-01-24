@@ -196,7 +196,7 @@ mod test {
         Block, CssEntity, FontFace, KeyframeBlock, Keyframes, Media, Name, Page, Selector,
         Supports, Value, Viewport,
     };
-    use std::collections::HashMap;
+    use indexmap::map::IndexMap;
 
     #[test]
     fn test_media() {
@@ -216,7 +216,7 @@ mod test {
                     entities: vec![CssEntity::Block(Block {
                         selectors: vec![Selector::Class("test".into())].into(),
                         parameters: {
-                            let mut tmp = HashMap::new();
+                            let mut tmp = IndexMap::new();
                             tmp.insert("min-height".into(), "68px".into());
                             tmp.into()
                         }
@@ -241,7 +241,7 @@ mod test {
                 Page {
                     selectors: Some(Name::from("test")),
                     parameters: {
-                        let mut tmp: HashMap<Name, Value> = HashMap::new();
+                        let mut tmp: IndexMap<Name, Value> = IndexMap::new();
                         tmp.insert("size".to_string(), "a3".to_string());
                         tmp
                     }
@@ -269,7 +269,7 @@ mod test {
                     entities: vec![CssEntity::Block(Block {
                         selectors: vec![Selector::Class("test".into())].into(),
                         parameters: {
-                            let mut tmp = HashMap::new();
+                            let mut tmp = IndexMap::new();
                             tmp.insert("min-height".into(), "68px".into());
                             tmp.into()
                         }
@@ -301,7 +301,7 @@ mod test {
                         KeyframeBlock {
                             name: "from".into(),
                             parameters: {
-                                let mut tmp = HashMap::new();
+                                let mut tmp = IndexMap::new();
                                 tmp.insert("margin-top".into(), "50px".into());
                                 tmp.into()
                             },
@@ -309,7 +309,7 @@ mod test {
                         KeyframeBlock {
                             name: "50%".into(),
                             parameters: {
-                                let mut tmp = HashMap::new();
+                                let mut tmp = IndexMap::new();
                                 tmp.insert("margin-top".into(), "150px !important".into());
                                 tmp.into()
                             }
@@ -317,7 +317,7 @@ mod test {
                         KeyframeBlock {
                             name: "to".into(),
                             parameters: {
-                                let mut tmp = HashMap::new();
+                                let mut tmp = IndexMap::new();
                                 tmp.insert("margin-top".into(), "100px".into());
                                 tmp.into()
                             }
@@ -344,7 +344,7 @@ mod test {
                 "",
                 FontFace {
                     parameters: {
-                        let mut tmp: HashMap<Name, Value> = HashMap::new();
+                        let mut tmp: IndexMap<Name, Value> = IndexMap::new();
                         tmp.insert("font-family".to_string(), "\"Open Sans\"".to_string());
                         tmp.insert(
                             "src".to_string(),
@@ -374,7 +374,7 @@ mod test {
                 "",
                 Viewport {
                     parameters: {
-                        let mut tmp: HashMap<Name, Value> = HashMap::new();
+                        let mut tmp: IndexMap<Name, Value> = IndexMap::new();
                         tmp.insert("min-width".to_string(), "640px".to_string());
                         tmp.insert("max-width".to_string(), "800px".to_string());
                         tmp

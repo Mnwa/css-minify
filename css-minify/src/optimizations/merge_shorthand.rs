@@ -487,7 +487,7 @@ mod test {
     use crate::optimizations::merge_shorthand::MergeShortHand;
     use crate::optimizations::transformer::Transform;
     use crate::structure::{Block, Parameters, Selectors};
-    use std::collections::HashMap;
+    use indexmap::map::IndexMap;
 
     #[test]
     fn test_compress_font() {
@@ -496,7 +496,7 @@ mod test {
                 Block {
                     selectors: Selectors::default(),
                     parameters: {
-                        let mut map = HashMap::new();
+                        let mut map = IndexMap::new();
                         map.insert("font-style".into(), "italic".into());
                         map.insert("font-weight".into(), "bold".into());
                         map.insert("font-size".into(), ".8em".into());
@@ -510,7 +510,7 @@ mod test {
             Block {
                 selectors: Selectors::default(),
                 parameters: {
-                    let mut map = HashMap::new();
+                    let mut map = IndexMap::new();
                     map.insert(
                         "font".into(),
                         "italic bold .8em/1.2 Arial, sans-serif".into(),
@@ -529,7 +529,7 @@ mod test {
                 Block {
                     selectors: Selectors::default(),
                     parameters: {
-                        let mut map = HashMap::new();
+                        let mut map = IndexMap::new();
                         map.insert("background-color".into(), "#000".into());
                         map.insert("background-image".into(), "url(images/bg.gif)".into());
                         map.insert("background-repeat".into(), "no-repeat".into());
@@ -542,7 +542,7 @@ mod test {
             Block {
                 selectors: Selectors::default(),
                 parameters: {
-                    let mut map = HashMap::new();
+                    let mut map = IndexMap::new();
                     map.insert(
                         "background".into(),
                         "#000 url(images/bg.gif) no-repeat left top".into(),
@@ -561,7 +561,7 @@ mod test {
                 Block {
                     selectors: Selectors::default(),
                     parameters: {
-                        let mut map = HashMap::new();
+                        let mut map = IndexMap::new();
                         map.insert("background-color".into(), "#000 !important".into());
                         Parameters(map)
                     },
@@ -571,7 +571,7 @@ mod test {
             Block {
                 selectors: Selectors::default(),
                 parameters: {
-                    let mut map = HashMap::new();
+                    let mut map = IndexMap::new();
                     map.insert("background".into(), "#000!important".into());
                     Parameters(map)
                 },
@@ -587,7 +587,7 @@ mod test {
                 Block {
                     selectors: Selectors::default(),
                     parameters: {
-                        let mut map = HashMap::new();
+                        let mut map = IndexMap::new();
                         map.insert("border-width".into(), "1px".into());
                         map.insert("border-style".into(), "solid".into());
                         map.insert("border-color".into(), "#000".into());
@@ -599,7 +599,7 @@ mod test {
             Block {
                 selectors: Selectors::default(),
                 parameters: {
-                    let mut map = HashMap::new();
+                    let mut map = IndexMap::new();
                     map.insert("border".into(), "1px solid #000".into());
                     Parameters(map)
                 },
@@ -615,7 +615,7 @@ mod test {
                 Block {
                     selectors: Selectors::default(),
                     parameters: {
-                        let mut map = HashMap::new();
+                        let mut map = IndexMap::new();
                         map.insert("outline-width".into(), "1px".into());
                         map.insert("outline-style".into(), "solid".into());
                         map.insert("outline-color".into(), "#000".into());
@@ -627,7 +627,7 @@ mod test {
             Block {
                 selectors: Selectors::default(),
                 parameters: {
-                    let mut map = HashMap::new();
+                    let mut map = IndexMap::new();
                     map.insert("outline".into(), "1px solid #000".into());
                     Parameters(map)
                 },

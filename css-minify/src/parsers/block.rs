@@ -27,7 +27,7 @@ mod test {
     use crate::parsers::block::parse_block;
     use crate::parsers::useless::non_useless;
     use crate::structure::{Block, Selector};
-    use std::collections::HashMap;
+    use indexmap::map::IndexMap;
 
     #[test]
     fn test_block() {
@@ -50,7 +50,7 @@ mod test {
                     ]
                     .into(),
                     parameters: {
-                        let mut tmp = HashMap::new();
+                        let mut tmp = IndexMap::new();
                         tmp.insert("padding".into(), "5px 3px".into());
                         tmp.insert("color".into(), "white".into());
                         tmp.into()

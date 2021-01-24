@@ -21,7 +21,7 @@
 //!              "#,
 //!              Level::Three
 //!         ),
-//!         Ok("#some_id,input{color:white;padding:5px 3px}#some_id_2,.class{color:#fff;padding:5px 4px}".into())
+//!         Ok("#some_id,input{padding:5px 3px;color:white}#some_id_2,.class{padding:5px 4px;color:#fff}".into())
 //!     )
 //! }
 //! ```

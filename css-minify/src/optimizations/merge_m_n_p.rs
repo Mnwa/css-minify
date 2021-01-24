@@ -218,7 +218,7 @@ mod test {
     use crate::optimizations::merge_m_n_p::Merge;
     use crate::optimizations::transformer::Transform;
     use crate::structure::{Block, Parameters, Selectors};
-    use std::collections::HashMap;
+    use indexmap::map::IndexMap;
 
     #[test]
     fn test_full_compress() {
@@ -227,7 +227,7 @@ mod test {
                 Block {
                     selectors: Selectors::default(),
                     parameters: {
-                        let mut map = HashMap::new();
+                        let mut map = IndexMap::new();
                         map.insert("margin-top".into(), "3px".into());
                         map.insert("margin-bottom".into(), "3px".into());
                         map.insert("margin-left".into(), "3px".into());
@@ -240,7 +240,7 @@ mod test {
             Block {
                 selectors: Selectors::default(),
                 parameters: {
-                    let mut map = HashMap::new();
+                    let mut map = IndexMap::new();
                     map.insert("margin".into(), "3px".into());
                     Parameters(map)
                 },
@@ -256,7 +256,7 @@ mod test {
                 Block {
                     selectors: Selectors::default(),
                     parameters: {
-                        let mut map = HashMap::new();
+                        let mut map = IndexMap::new();
                         map.insert("margin-top".into(), "3px".into());
                         map.insert("margin-bottom".into(), "3px".into());
                         map.insert("margin-left".into(), "4px".into());
@@ -269,7 +269,7 @@ mod test {
             Block {
                 selectors: Selectors::default(),
                 parameters: {
-                    let mut map = HashMap::new();
+                    let mut map = IndexMap::new();
                     map.insert("margin".into(), "3px 4px".into());
                     Parameters(map)
                 },
@@ -285,7 +285,7 @@ mod test {
                 Block {
                     selectors: Selectors::default(),
                     parameters: {
-                        let mut map = HashMap::new();
+                        let mut map = IndexMap::new();
                         map.insert("margin-top".into(), "3px".into());
                         map.insert("margin-bottom".into(), "1px".into());
                         map.insert("margin-left".into(), "4px".into());
@@ -298,7 +298,7 @@ mod test {
             Block {
                 selectors: Selectors::default(),
                 parameters: {
-                    let mut map = HashMap::new();
+                    let mut map = IndexMap::new();
                     map.insert("margin".into(), "3px 4px 1px".into());
                     Parameters(map)
                 },
@@ -314,7 +314,7 @@ mod test {
                 Block {
                     selectors: Selectors::default(),
                     parameters: {
-                        let mut map = HashMap::new();
+                        let mut map = IndexMap::new();
                         map.insert("margin-top".into(), "3px".into());
                         map.insert("margin-bottom".into(), "1px".into());
                         map.insert("margin-left".into(), "2px".into());
@@ -327,7 +327,7 @@ mod test {
             Block {
                 selectors: Selectors::default(),
                 parameters: {
-                    let mut map = HashMap::new();
+                    let mut map = IndexMap::new();
                     map.insert("margin".into(), "3px 4px 1px 2px".into());
                     Parameters(map)
                 },

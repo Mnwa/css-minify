@@ -1,5 +1,5 @@
 use crate::structure::{CssEntities, CssEntity, Media, Name, Parameters, Supports, Value};
-use std::collections::HashMap;
+use indexmap::map::IndexMap;
 
 #[derive(Default)]
 pub struct Transformer {
@@ -31,7 +31,7 @@ impl Transform for Transformer {
                 }
                 (name, value)
             })
-            .collect::<HashMap<Name, Value>>()
+            .collect::<IndexMap<Name, Value>>()
             .into()
     }
 }

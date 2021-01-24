@@ -1,9 +1,9 @@
 use crate::parsers::useless::non_useless;
 use crate::structure::{Name, Parameters, Value};
+use indexmap::map::IndexMap;
 use nom::bytes::complete::{is_not, tag};
 use nom::character::complete::char;
 use nom::combinator::{map, not};
-use nom::lib::std::collections::HashMap;
 use nom::multi::many0;
 use nom::sequence::{preceded, separated_pair, terminated};
 use nom::IResult;
@@ -11,7 +11,7 @@ use nom::IResult;
 pub fn parse_parameters(input: &str) -> IResult<&str, Parameters> {
     map(
         many0(non_useless(preceded(not(char('}')), parse_parameter))),
-        |p| p.into_iter().collect::<HashMap<_, _>>().into(),
+        |p| p.into_iter().collect::<IndexMap<_, _>>().into(),
     )(input)
 }
 
@@ -28,7 +28,7 @@ pub fn parse_parameter(input: &str) -> IResult<&str, (Name, Value)> {
 #[cfg(test)]
 mod test {
     use crate::parsers::parameters::{parse_parameter, parse_parameters};
-    use nom::lib::std::collections::HashMap;
+    use indexmap::map::IndexMap;
 
     #[test]
     fn test_parameter() {
@@ -51,7 +51,7 @@ mod test {
                 "
             ),
             Ok(("", {
-                let mut tmp = HashMap::new();
+                let mut tmp = IndexMap::new();
                 tmp.insert("margin-top".into(), "32px".into());
                 tmp.insert("margin-bottom".into(), "32px".into());
                 tmp.insert("margin-left".into(), "32px".into());
@@ -70,7 +70,7 @@ mod test {
                 "
             ),
             Ok(("", {
-                let mut tmp = HashMap::new();
+                let mut tmp = IndexMap::new();
                 tmp.insert("background-color".into(), "#f64e60 !important".into());
                 tmp.into()
             }))

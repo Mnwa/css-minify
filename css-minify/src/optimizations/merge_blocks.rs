@@ -68,7 +68,7 @@ mod test {
     use crate::optimizations::merge_blocks::MergeBlocks;
     use crate::optimizations::transformer::Transform;
     use crate::structure::{Block, CssEntities, CssEntity, Selector};
-    use std::collections::HashMap;
+    use indexmap::map::IndexMap;
 
     #[test]
     fn test_blocks() {
@@ -77,7 +77,7 @@ mod test {
                 CssEntity::Block(Block {
                     selectors: vec![Selector::Class("test".into())].into(),
                     parameters: {
-                        let mut tmp = HashMap::new();
+                        let mut tmp = IndexMap::new();
                         tmp.insert("background-color".into(), "#f64e60 !important".into());
                         tmp.into()
                     }
@@ -85,7 +85,7 @@ mod test {
                 CssEntity::Block(Block {
                     selectors: vec![Selector::Class("test".into())].into(),
                     parameters: {
-                        let mut tmp = HashMap::new();
+                        let mut tmp = IndexMap::new();
                         tmp.insert("color".into(), "#f64e60 !important".into());
                         tmp.into()
                     }
@@ -94,7 +94,7 @@ mod test {
             CssEntities(vec![CssEntity::Block(Block {
                 selectors: vec![Selector::Class("test".into())].into(),
                 parameters: {
-                    let mut tmp = HashMap::new();
+                    let mut tmp = IndexMap::new();
                     tmp.insert("background-color".into(), "#f64e60 !important".into());
                     tmp.insert("color".into(), "#f64e60 !important".into());
                     tmp.into()

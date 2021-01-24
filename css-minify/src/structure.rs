@@ -1,5 +1,5 @@
 use derive_more::{Deref, DerefMut, From, Into};
-use std::collections::HashMap;
+use indexmap::map::IndexMap;
 use std::fmt::Display;
 use std::fmt::Formatter;
 
@@ -90,7 +90,7 @@ pub enum CssEntity {
 pub struct Selectors(pub(crate) Vec<Selector>);
 
 #[derive(Clone, Eq, PartialEq, Default, Debug, Deref, DerefMut, From, Into)]
-pub struct Parameters(pub(crate) HashMap<Name, Value>);
+pub struct Parameters(pub(crate) IndexMap<Name, Value>);
 
 #[derive(Clone, Eq, PartialEq, Default, Debug, Deref, DerefMut, From, Into)]
 pub struct Blocks(pub(crate) Vec<Block>);
@@ -145,12 +145,11 @@ impl Display for Selectors {
 
 impl Display for Parameters {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        let mut parameters = self
+        let parameters = self
             .0
             .iter()
             .map(|(name, value)| format!("{}:{}", name, value))
             .collect::<Vec<String>>();
-        parameters.sort();
         write!(f, "{}", parameters.join(";"))
     }
 }
@@ -313,7 +312,7 @@ impl Display for CssEntities {
 #[cfg(test)]
 mod test {
     use crate::structure::{Block, Blocks, Selector};
-    use std::collections::HashMap;
+    use indexmap::map::IndexMap;
 
     #[test]
     fn write_block() {
@@ -325,7 +324,7 @@ mod test {
                 ]
                 .into(),
                 parameters: {
-                    let mut tmp = HashMap::new();
+                    let mut tmp = IndexMap::new();
                     tmp.insert("padding".into(), "5px 3px".into());
                     tmp.insert("color".into(), "white".into());
                     tmp.into()
@@ -338,7 +337,7 @@ mod test {
                 ]
                 .into(),
                 parameters: {
-                    let mut tmp = HashMap::new();
+                    let mut tmp = IndexMap::new();
                     tmp.insert("padding".into(), "5px 4px".into());
                     tmp.insert("color".into(), "black".into());
                     tmp.into()
@@ -346,6 +345,6 @@ mod test {
             },
         ]
         .into();
-        assert_eq!(format!("{}", blocks), "#some_id,input{color:white;padding:5px 3px}#some_id_2,.class{color:black;padding:5px 4px}")
+        assert_eq!(format!("{}", blocks), "#some_id,input{padding:5px 3px;color:white}#some_id_2,.class{padding:5px 4px;color:black}")
     }
 }
