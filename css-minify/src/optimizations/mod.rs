@@ -16,6 +16,7 @@ use crate::structure::Value;
 use derive_more::{From, Into};
 use nom::lib::std::fmt::Debug;
 use nom::lib::std::str::FromStr;
+use nom::{Err, Needed};
 use std::error::Error;
 use std::fmt::Display;
 use std::fmt::Formatter;
@@ -34,7 +35,7 @@ impl Minifier {
     pub fn minify<'a>(&mut self, input: &'a str, level: Level) -> MResult<'a> {
         let mut result = parse_css(input)
             .map(|(_, blocks)| blocks)
-            .map_err(MError::from);
+            .map_err(|e| MError(input, e));
 
         if level == Level::Three {
             result = result
@@ -160,11 +161,30 @@ impl Error for ParseLevelError {}
 pub type MResult<'a> = Result<String, MError<'a>>;
 
 #[derive(Debug, From, Into, PartialEq)]
-pub struct MError<'a>(nom::Err<nom::error::Error<&'a str>>);
+pub struct MError<'a>(&'a str, nom::Err<nom::error::Error<&'a str>>);
 
 impl Display for MError<'_> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Invalid css")
+        let unparsed_size = match &self.1 {
+            Err::Incomplete(n) => match n {
+                Needed::Unknown => None,
+                Needed::Size(s) => Some(s.get()),
+            },
+            Err::Error(e) => Some(e.input.len()),
+            Err::Failure(e) => Some(e.input.len()),
+        };
+        if let Some(size) = unparsed_size {
+            let parsed_css = &self.0[..self.0.len() - size];
+
+            write!(
+                f,
+                "Invalid css at line {}:{}",
+                parsed_css.lines().count(),
+                parsed_css.lines().last().map(|l| l.len()).unwrap_or(0)
+            )
+        } else {
+            write!(f, "Invalid css")
+        }
     }
 }
 
@@ -210,6 +230,32 @@ mod test {
                     Level::Three
             ),
             Ok("#some_id,input{padding:5px 3px;color:white}#some_id_2,.class{padding:5px 4px;color:#fff}".into())
+        )
+    }
+
+    #[test]
+    fn test_minify_invalid_css() {
+        assert_eq!(
+            Minifier::default()
+                .minify(
+                    r#"
+                #some_id, input {
+                    padding: 5px 3px; /* Mega comment */
+                    color: white;
+                }} /* sasd */
+                
+                
+                /* this is are test id */
+                #some_id_2, .class {
+                    padding: 5px 4px; /* Mega comment */
+                    Color: rgb(255, 255, 255);
+                }
+            "#,
+                    Level::Three
+                )
+                .unwrap_err()
+                .to_string(),
+            "Invalid css at line 5:17"
         )
     }
 }
