@@ -452,6 +452,7 @@ textarea:disabled {
     color: #fafafa;
     padding: 20px;
     max-width: 100%;
+    white-space: pre-wrap;
 }
 
 .footer {
