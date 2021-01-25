@@ -38,6 +38,8 @@ fn main() {
 [![](https://img.shields.io/crates/v/css-minifier.svg)](https://crates.io/crates/css-minifier)
 [![](https://img.shields.io/crates/d/css-minifier.svg)](https://crates.io/crates/css-minifier)
 
+Web version also available https://css-minify.panfilov.tech/
+
 CLI wrapper for css-minify library.
 
 ```

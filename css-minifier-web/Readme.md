@@ -1,7 +1,7 @@
 # CSS minifier web
 [![](https://github.com/Mnwa/css-minify/workflows/minifier-web/badge.svg?branch=master)](https://github.com/Mnwa/css-minifier/actions?query=workflow%3Aminifier-web)
 
-Web wrapper for css-minify library.
+Web wrapper for css-minify library. The official site is https://css-minify.panfilov.tech/
 
 Example
 ```bash
