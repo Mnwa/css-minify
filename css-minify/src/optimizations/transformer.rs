@@ -11,6 +11,8 @@ pub enum TransformerParameterFn {
     Value(Box<dyn FnMut(Value) -> Value>),
 }
 
+unsafe impl Send for TransformerParameterFn {}
+
 impl Transformer {
     pub fn register_parameter(&mut self, transformer: TransformerParameterFn) {
         self.parameters.push(transformer)
