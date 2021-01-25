@@ -1,0 +1,33 @@
+name: minifier-web
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build
+      run: cargo build --verbose
+      working-directory: ./css-minifier-web
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run tests
+      run: cargo test
+      working-directory: ./css-minifier-web
+
+
+  codeStyle:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run cargo fmt
+      run: cargo fmt --all -- --check
+      working-directory: ./css-minifier-web

@@ -3,4 +3,5 @@
 members = [
     "css-minify",
     "css-minifier",
+    "css-minifier-web",
 ]
