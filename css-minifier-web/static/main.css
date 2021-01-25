@@ -478,10 +478,23 @@ textarea:disabled {
     text-decoration: none;
     font-size: 16px;
     cursor: pointer;
+    margin: 10px 0;
 }
 
 .options {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
+    flex-direction: column;
+}
+
+@media (min-width: 768px) {
+    .options {
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .submit {
+        margin: 0;
+    }
 }
