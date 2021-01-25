@@ -435,6 +435,7 @@ body {
     line-height:16px;
     padding: 16px;
     border:none;
+    box-sizing: border-box
 }
 
 textarea:focus {
