@@ -429,7 +429,7 @@ body {
 
 .textarea {
     width: 100%;
-    font-family: 'Oswald', sans-serif;
+    font-family: 'Oswald', monospace;
     min-width:50%;
     font-size:14px;
     line-height:16px;

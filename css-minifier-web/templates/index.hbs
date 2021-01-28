@@ -22,6 +22,7 @@
         <a href="https://github.com/Mnwa/css-minify" rel="nofollow noreferrer" target="_blank" class="link">Our Github</a>
     </nav>
 </header>
+{{ let input_css = input_css.as_ref().map(|s| s.as_str()).unwrap_or_default().trim() }}
 <main class="main">
     <div class="container">
         <h1 class="heading">Css Minifier & Optimizer</h1>
@@ -34,8 +35,9 @@
                             Input CSS
                         </h3>
                     </label>
+
                     <textarea name="input_css" class="textarea" id="input_css" cols="30"
-                              rows="20">{{ input_css.as_ref().map(|s| s.as_str()).unwrap_or_default().trim() }}</textarea>
+                              rows="20">{{ input_css }}</textarea>
                 </div>
                 <div class="column">
                     <label for="output_css">
@@ -43,7 +45,7 @@
                             Output CSS
                         </h3>
                     </label>
-                    <textarea id="output_css" class="textarea" cols="30" rows="20" disabled>{{ output_css.as_ref().map(|s| s.as_str()).unwrap_or_default().trim() }}</textarea>
+                    <textarea id="output_css" class="textarea" cols="30" rows="20" disabled>{{ output_css.as_ref().map(|s| s.as_str()).unwrap_or_default() }}</textarea>
                 </div>
                 <div class="column options">
                     <label>
@@ -57,6 +59,19 @@
                     </label>
                     <button type="submit" class="submit">Minify</button>
                 </div>
+                {{#if let Some(output) = output_css.as_ref()}}
+                    <div class="column">
+                        {{ let size_diff = (input_css.len() - output.len()) }}
+                        <span>
+                            You saved: {{ 100 - (((output.len() as f64) / (input_css.len() as f64) * 100f64) as i64) }}%
+                            {{#if size_diff > 1024 }}
+                                ({{ size_diff / 1024 }} kb)
+                            {{else}}
+                                ({{ size_diff }} bytes)
+                            {{/if}}
+                        </span>
+                    </div>
+                {{/if}}
             </div>
         </form>
 
