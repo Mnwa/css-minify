@@ -1,4 +1,4 @@
-use crate::parsers::useless::{is_not_block_ending, non_useless};
+use crate::parsers::utils::{is_not_block_ending, non_useless};
 use crate::structure::{Selector, Selectors};
 use nom::branch::alt;
 use nom::bytes::complete::is_not;

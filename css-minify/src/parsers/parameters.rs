@@ -1,9 +1,9 @@
-use crate::parsers::useless::non_useless;
+use crate::parsers::utils::non_useless;
 use crate::structure::{Name, Parameters, Value};
 use indexmap::map::IndexMap;
-use nom::bytes::complete::{is_not, tag};
+use nom::bytes::complete::is_not;
 use nom::character::complete::char;
-use nom::combinator::{map, not};
+use nom::combinator::{map, not, opt};
 use nom::multi::many0;
 use nom::sequence::{preceded, separated_pair, terminated};
 use nom::IResult;
@@ -18,8 +18,12 @@ pub fn parse_parameters(input: &str) -> IResult<&str, Parameters> {
 pub fn parse_parameter(input: &str) -> IResult<&str, (Name, Value)> {
     map(
         terminated(
-            separated_pair(non_useless(is_not(":")), tag(":"), non_useless(is_not(";"))),
-            tag(";"),
+            separated_pair(
+                non_useless(is_not(":")),
+                char(':'),
+                non_useless(is_not(";}")),
+            ),
+            opt(char(';')),
         ),
         |(name, value)| (name.trim().into(), value.trim().into()),
     )(input)

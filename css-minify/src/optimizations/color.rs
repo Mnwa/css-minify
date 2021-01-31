@@ -1,4 +1,4 @@
-use crate::parsers::useless::non_useless;
+use crate::parsers::utils::non_useless;
 use derive_more::{Deref, DerefMut, From, Into};
 use nom::branch::alt;
 use nom::bytes::complete::tag;

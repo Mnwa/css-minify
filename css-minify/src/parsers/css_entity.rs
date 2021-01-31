@@ -3,7 +3,7 @@ use crate::parsers::at::{
     parse_viewport,
 };
 use crate::parsers::block::parse_block;
-use crate::parsers::useless::non_useless;
+use crate::parsers::utils::non_useless;
 use crate::structure::{CssEntities, CssEntity};
 use nom::branch::alt;
 use nom::combinator::{all_consuming, into, map};

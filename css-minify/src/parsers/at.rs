@@ -1,122 +1,73 @@
 use crate::parsers::css_entity::parse_entities;
 use crate::parsers::parameters::parse_parameters;
-use crate::parsers::useless::{is_not_block_ending, non_useless, parse_to_block_open};
+use crate::parsers::utils::{
+    is_not_block_ending, non_useless, not_space, parse_to_block_open, some_block,
+    some_block_with_prefix, some_block_with_prefix_and_value, space,
+};
 use crate::structure::{
     At, CharsetAt, FontFace, ImportAt, KeyframeBlock, KeyframeBlocks, Keyframes, Media,
     NamespaceAt, Page, Supports, Value, Viewport,
 };
 use nom::branch::alt;
-use nom::bytes::complete::{is_a, is_not, tag};
+use nom::bytes::complete::{is_not, tag};
 use nom::combinator::{into, map, map_parser, opt, rest};
+use nom::error::Error as IError;
 use nom::multi::many0;
 use nom::sequence::{preceded, separated_pair, terminated, tuple};
 use nom::IResult;
 
 pub fn parse_media(input: &str) -> IResult<&str, Media> {
-    map(
-        non_useless(tuple((
-            tag("@media"),
-            non_useless(parse_to_block_open),
-            tag("{"),
-            non_useless(parse_entities),
-            tag("}"),
-        ))),
-        |(_, screen, _, entities, _)| Media { screen, entities },
-    )(input)
+    into(some_block_with_prefix_and_value(
+        "@media",
+        parse_to_block_open,
+        parse_entities,
+    ))(input)
 }
 
 pub fn parse_page(input: &str) -> IResult<&str, Page> {
-    map(
-        non_useless(tuple((
-            tag("@page"),
-            non_useless(opt(parse_to_block_open)),
-            tag("{"),
-            non_useless(parse_parameters),
-            tag("}"),
-        ))),
-        |(_, selectors, _, parameters, _)| Page {
-            selectors,
-            parameters,
-        },
-    )(input)
+    into(some_block_with_prefix_and_value(
+        "@page",
+        opt(parse_to_block_open),
+        parse_parameters,
+    ))(input)
 }
 
 pub fn parse_supports(input: &str) -> IResult<&str, Supports> {
-    map(
-        non_useless(tuple((
-            tag("@supports"),
-            non_useless(parse_to_block_open),
-            tag("{"),
-            non_useless(parse_entities),
-            tag("}"),
-        ))),
-        |(_, conditions, _, entities, _)| Supports {
-            conditions,
-            entities,
-        },
-    )(input)
+    into(some_block_with_prefix_and_value(
+        "@supports",
+        parse_to_block_open,
+        parse_entities,
+    ))(input)
 }
 
 pub fn parse_keyframes(input: &str) -> IResult<&str, Keyframes> {
-    map(
-        non_useless(tuple((
-            alt((
-                map(tag("@keyframes"), |_| false),
-                map(tag("@-webkit-keyframes"), |_| true),
-            )),
-            non_useless(parse_to_block_open),
-            tag("{"),
-            non_useless(parse_keyframe_blocks),
-            tag("}"),
-        ))),
-        |(webkit_prefix, name, _, blocks, _)| Keyframes {
-            name,
-            blocks,
-            webkit_prefix,
-        },
-    )(input)
+    into(non_useless(tuple((
+        alt((
+            map(tag("@keyframes"), |_| false),
+            map(tag("@-webkit-keyframes"), |_| true),
+        )),
+        non_useless(parse_to_block_open),
+        some_block(parse_keyframe_blocks),
+    ))))(input)
 }
 
 pub fn parse_keyframe_blocks(input: &str) -> IResult<&str, KeyframeBlocks> {
-    map(many0(non_useless(parse_keyframe_block)), |blocks| {
-        blocks.into()
-    })(input)
+    into(many0(non_useless(parse_keyframe_block)))(input)
 }
 
 pub fn parse_keyframe_block(input: &str) -> IResult<&str, KeyframeBlock> {
-    map(
-        tuple((
-            non_useless(is_not_block_ending(parse_to_block_open)),
-            tag("{"),
-            non_useless(parse_parameters),
-            tag("}"),
-        )),
-        |(name, _, parameters, _)| KeyframeBlock { name, parameters },
-    )(input)
+    into(tuple((
+        non_useless(is_not_block_ending(parse_to_block_open)),
+        some_block(parse_parameters),
+    )))(input)
 }
 
 pub fn parse_font_face(input: &str) -> IResult<&str, FontFace> {
-    map(
-        non_useless(tuple((
-            non_useless(tag("@font-face")),
-            tag("{"),
-            non_useless(parse_parameters),
-            tag("}"),
-        ))),
-        |(_, _, parameters, _)| FontFace { parameters },
-    )(input)
+    into(some_block_with_prefix("@font-face", parse_parameters))(input)
 }
 
 pub fn parse_viewport(input: &str) -> IResult<&str, Viewport> {
-    map(
-        non_useless(tuple((
-            non_useless(tag("@viewport")),
-            tag("{"),
-            non_useless(parse_parameters),
-            tag("}"),
-        ))),
-        |(_, _, parameters, _)| Viewport { parameters },
-    )(input)
+    into(some_block_with_prefix("@viewport", parse_parameters))(input)
 }
 
 pub fn parse_at(input: &str) -> IResult<&str, At> {
@@ -128,13 +79,7 @@ pub fn parse_at(input: &str) -> IResult<&str, At> {
 }
 
 pub fn parse_charset(input: &str) -> IResult<&str, CharsetAt> {
-    map(
-        preceded(
-            tag("@charset"),
-            terminated(non_useless(is_not(";")), tag(";")),
-        ),
-        |s: &str| Value::from(s).into(),
-    )(input)
+    map(simple_at("@charset"), |s: &str| Value::from(s).into())(input)
 }
 
 /**
@@ -143,12 +88,9 @@ pub fn parse_charset(input: &str) -> IResult<&str, CharsetAt> {
 pub fn parse_namespace(input: &str) -> IResult<&str, NamespaceAt> {
     map(
         map_parser(
-            preceded(
-                tag("@namespace"),
-                terminated(non_useless(is_not(";")), tag(";")),
-            ),
+            simple_at("@namespace"),
             alt((
-                separated_pair(is_not(" \t\r\n"), is_a(" \t\r\n"), rest),
+                separated_pair(not_space, space, rest),
                 map(non_useless(rest), |s| ("", s)),
             )),
         ),
@@ -166,13 +108,10 @@ pub fn parse_namespace(input: &str) -> IResult<&str, NamespaceAt> {
 pub fn parse_import(input: &str) -> IResult<&str, ImportAt> {
     map(
         map_parser(
-            preceded(
-                tag("@import"),
-                terminated(non_useless(is_not(";")), tag(";")),
-            ),
+            simple_at("@import"),
             alt((
-                separated_pair(is_not(" \t\r\n"), is_a(" \t\r\n"), rest),
-                map(non_useless(rest), |s| ("", s)),
+                separated_pair(not_space, space, rest),
+                map(non_useless(rest), |s| (s, "")),
             )),
         ),
         |(url, media_list)| {
@@ -184,6 +123,12 @@ pub fn parse_import(input: &str) -> IResult<&str, ImportAt> {
             .into()
         },
     )(input)
+}
+
+fn simple_at<'a>(
+    prefix: &'a str,
+) -> impl FnMut(&'a str) -> IResult<&'a str, &'a str, IError<&'a str>> {
+    preceded(tag(prefix), terminated(non_useless(is_not(";")), tag(";")))
 }
 
 #[cfg(test)]
@@ -206,8 +151,7 @@ mod test {
             @media only screen and (max-width: 992px) {
               .test {
                 min-height: 68px; }
-            }
-    "#
+            }"#
             ),
             Ok((
                 "",
@@ -233,8 +177,7 @@ mod test {
             parse_page(
                 r#"
                 @page test {
-                    size: a3; }
-    "#
+                    size: a3; }"#
             ),
             Ok((
                 "",
@@ -259,8 +202,7 @@ mod test {
             @supports (-ms-ime-align: auto) {
               .test {
                 min-height: 68px; }
-            }
-    "#
+            }"#
             ),
             Ok((
                 "",
@@ -337,8 +279,7 @@ mod test {
             @font-face {
                 font-family: "Open Sans";
                 src: url(/fonts/OpenSans-Regular-webfont.woff2) format("woff2");
-            }
-    "#
+            }"#
             ),
             Ok((
                 "",
@@ -367,8 +308,7 @@ mod test {
             @viewport {
               min-width: 640px;
               max-width: 800px;
-            }
-    "#
+            }"#
             ),
             Ok((
                 "",
@@ -420,6 +360,14 @@ mod test {
                 )
                     .into()
             ))
+        )
+    }
+
+    #[test]
+    fn test_import_url() {
+        assert_eq!(
+            parse_import("@import url('landscape.css');"),
+            Ok(("", (Value::from("url('landscape.css')"), None,).into()))
         )
     }
 }
