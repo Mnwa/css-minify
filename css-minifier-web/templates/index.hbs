@@ -62,10 +62,11 @@
                 {{#if let Some(output) = output_css.as_ref()}}
                     <div class="column">
                         {{ let size_diff = (input_css.len() - output.len()) }}
+                        {{ let size_rate = ((size_diff as f64) / (input_css.len() as f64) * 100f64) as i64 }}
                         <span>
-                            You saved: {{ 100 - (((output.len() as f64) / (input_css.len() as f64) * 100f64) as i64) }}%
+                            You saved: {{ size_rate }}%
                             {{#if size_diff > 1024 }}
-                                ({{ size_diff / 1024 }} kb)
+                                ({{ size_diff / 1024 }} kilobytes)
                             {{else}}
                                 ({{ size_diff }} bytes)
                             {{/if}}

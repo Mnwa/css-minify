@@ -42,6 +42,15 @@ fn main() {
     .expect("cannot open input file");
     let minified_css = minifier.minify(&input_file, level).unwrap();
 
+    let mut size_diff = input_file.len() - minified_css.len();
+    let size_rate = ((size_diff as f64) / (input_file.len() as f64) * 100f64) as i64;
+    let mut prefix = "bytes";
+    if size_diff > 1024 {
+        size_diff = size_diff / 1024;
+        prefix = "kilobytes"
+    }
+    println!("You saved: {}% ({} {})", size_rate, size_diff, prefix);
+
     if let Some(output) = output {
         write(
             shellexpand::full(&output)
