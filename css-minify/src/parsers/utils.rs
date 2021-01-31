@@ -1,8 +1,8 @@
 use nom::branch::alt;
 use nom::bytes::complete::{is_a, is_not, tag, take_until};
-use nom::character::complete::char;
 use nom::character::complete::multispace1;
-use nom::combinator::{map, not, peek};
+use nom::character::complete::{char, none_of};
+use nom::combinator::{map, peek};
 use nom::error::Error as IError;
 use nom::multi::many0;
 use nom::sequence::{delimited, preceded, tuple};
@@ -32,7 +32,7 @@ pub fn parse_to_block_open<'a, T: From<&'a str>>(input: &'a str) -> IResult<&'a 
 pub fn is_not_block_ending<'a, O, P: Parser<&'a str, O, IError<&'a str>>>(
     parser: P,
 ) -> impl FnMut(&'a str) -> IResult<&'a str, O, IError<&'a str>> {
-    preceded(peek(not(alt((char('@'), char('{'), char('}'))))), parser)
+    preceded(peek(none_of("@{}")), parser)
 }
 
 pub fn some_block<'a, O, P: Parser<&'a str, O, IError<&'a str>>>(
