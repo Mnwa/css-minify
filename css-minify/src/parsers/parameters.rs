@@ -22,7 +22,7 @@ pub fn parse_parameter(input: &str) -> IResult<&str, (Name, Value)> {
             separated_pair(
                 non_useless(is_not(":")),
                 char(':'),
-                non_useless(is_not(":;}")),
+                non_useless(is_not(";}")),
             ),
             alt((char(';'), peek(char('}')))),
         ),

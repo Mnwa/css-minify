@@ -160,8 +160,17 @@ impl Error for ParseLevelError {}
 
 pub type MResult<'a> = Result<String, MError<'a>>;
 
-#[derive(Debug, From, Into, PartialEq)]
+#[derive(From, Into, PartialEq)]
 pub struct MError<'a>(&'a str, nom::Err<nom::error::Error<&'a str>>);
+
+impl Debug for MError<'_> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("MError")
+            .field("message", &format!("{}", self))
+            .field("error", &format!("{:?}", self.0))
+            .finish()
+    }
+}
 
 impl Display for MError<'_> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
