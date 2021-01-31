@@ -2,10 +2,10 @@ use nom::branch::alt;
 use nom::bytes::complete::{is_a, is_not, tag, take_until};
 use nom::character::complete::char;
 use nom::character::complete::multispace1;
-use nom::combinator::{map, not};
+use nom::combinator::{map, not, peek};
 use nom::error::Error as IError;
 use nom::multi::many0;
-use nom::sequence::{preceded, tuple};
+use nom::sequence::{delimited, preceded, tuple};
 use nom::{IResult, Parser};
 
 pub fn non_useless<'a, O, P: Parser<&'a str, O, IError<&'a str>>>(
@@ -32,16 +32,13 @@ pub fn parse_to_block_open<'a, T: From<&'a str>>(input: &'a str) -> IResult<&'a 
 pub fn is_not_block_ending<'a, O, P: Parser<&'a str, O, IError<&'a str>>>(
     parser: P,
 ) -> impl FnMut(&'a str) -> IResult<&'a str, O, IError<&'a str>> {
-    preceded(not(alt((char('@'), char('{'), char('}')))), parser)
+    preceded(peek(not(alt((char('@'), char('{'), char('}'))))), parser)
 }
 
 pub fn some_block<'a, O, P: Parser<&'a str, O, IError<&'a str>>>(
     parser: P,
 ) -> impl FnMut(&'a str) -> IResult<&'a str, O, IError<&'a str>> {
-    map(
-        tuple((char('{'), non_useless(parser), char('}'))),
-        |(_, res, _)| res,
-    )
+    delimited(char('{'), non_useless(parser), char('}'))
 }
 
 pub fn some_block_with_prefix<'a, O, P: Parser<&'a str, O, IError<&'a str>>>(
