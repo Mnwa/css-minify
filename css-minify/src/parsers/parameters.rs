@@ -20,7 +20,7 @@ pub fn parse_parameter(input: &str) -> IResult<&str, (Name, Value)> {
     map(
         terminated(
             separated_pair(
-                non_useless(is_not(":")),
+                non_useless(is_not(":;}")),
                 char(':'),
                 non_useless(is_not(";}")),
             ),
@@ -34,6 +34,7 @@ pub fn parse_parameter(input: &str) -> IResult<&str, (Name, Value)> {
 mod test {
     use crate::parsers::parameters::{parse_parameter, parse_parameters};
     use indexmap::map::IndexMap;
+    use nom::combinator::all_consuming;
 
     #[test]
     fn test_parameter() {
@@ -79,6 +80,20 @@ mod test {
                 tmp.insert("background-color".into(), "#f64e60 !important".into());
                 tmp.into()
             }))
+        )
+    }
+
+    #[test]
+    fn test_parameters_double_dot() {
+        assert_eq!(
+            all_consuming(parse_parameters)(
+                "
+                display: inline-block;;
+                font-size: 16px;
+                "
+            )
+            .is_err(),
+            true
         )
     }
 }

@@ -187,9 +187,8 @@ impl Display for MError<'_> {
 
             write!(
                 f,
-                "Invalid css at line {}:{}",
-                parsed_css.lines().count(),
-                parsed_css.lines().last().map(|l| l.len()).unwrap_or(0)
+                "Invalid block at line {}",
+                parsed_css.lines().count() + 1
             )
         } else {
             write!(f, "Invalid css")
@@ -264,7 +263,7 @@ mod test {
                 )
                 .unwrap_err()
                 .to_string(),
-            "Invalid css at line 5:17"
+            "Invalid block at line 6"
         )
     }
 }
