@@ -172,6 +172,29 @@ mod test {
     }
 
     #[test]
+    fn test_page_without_prefix() {
+        assert_eq!(
+            parse_page(
+                r#"
+                @page {
+                    size: a3; }"#
+            ),
+            Ok((
+                "",
+                Page {
+                    selectors: None,
+                    parameters: {
+                        let mut tmp: IndexMap<Name, Value> = IndexMap::new();
+                        tmp.insert("size".to_string(), "a3".to_string());
+                        tmp
+                    }
+                    .into()
+                }
+            ))
+        )
+    }
+
+    #[test]
     fn test_supports() {
         assert_eq!(
             parse_supports(
