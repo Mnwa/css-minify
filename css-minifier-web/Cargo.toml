@@ -8,8 +8,8 @@ edition = "2018"
 
 [dependencies]
 css-minify = { version = "0.2", path = "../css-minify" }
-actix-web = { version = "3" }
-actix-files = "0.5"
+actix-web = { version = "4.0.0-beta.1" }
+actix-files = "0.6.0-beta.1"
 yarte = "0.14"
 serde = { version = "1.0", features = ["derive"] }
 parking_lot = "0.11"
