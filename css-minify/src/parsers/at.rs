@@ -13,7 +13,7 @@ use nom::bytes::complete::{is_not, tag};
 use nom::combinator::{into, map, map_parser, opt, rest};
 use nom::error::Error as IError;
 use nom::multi::many0;
-use nom::sequence::{preceded, separated_pair, terminated, tuple};
+use nom::sequence::{preceded, terminated, tuple};
 use nom::IResult;
 
 pub fn parse_media(input: &str) -> IResult<&str, Media> {
@@ -82,26 +82,13 @@ pub fn parse_charset(input: &str) -> IResult<&str, CharsetAt> {
     map(simple_at("@charset"), |s: &str| Value::from(s).into())(input)
 }
 
-/**
-@TODO перевести на opt
-*/
 pub fn parse_namespace(input: &str) -> IResult<&str, NamespaceAt> {
     map(
         map_parser(
             simple_at("@namespace"),
-            alt((
-                separated_pair(not_space, space, rest),
-                map(non_useless(rest), |s| ("", s)),
-            )),
+            tuple((opt(terminated(not_space, space)), rest)),
         ),
-        |(prefix, url)| {
-            if prefix.is_empty() {
-                (None, Value::from(url))
-            } else {
-                (Some(Value::from(prefix)), Value::from(url))
-            }
-            .into()
-        },
+        |(prefix, url)| (prefix.map(Value::from), Value::from(url)).into(),
     )(input)
 }
 
@@ -109,19 +96,9 @@ pub fn parse_import(input: &str) -> IResult<&str, ImportAt> {
     map(
         map_parser(
             simple_at("@import"),
-            alt((
-                separated_pair(not_space, space, rest),
-                map(non_useless(rest), |s| (s, "")),
-            )),
+            tuple((not_space, opt(preceded(space, rest)))),
         ),
-        |(url, media_list)| {
-            if media_list.is_empty() {
-                (Value::from(url), None)
-            } else {
-                (Value::from(url), Some(Value::from(media_list)))
-            }
-            .into()
-        },
+        |(url, media_list)| (Value::from(url), media_list.map(Value::from)).into(),
     )(input)
 }
 
@@ -349,6 +326,17 @@ mod test {
     }
 
     #[test]
+    fn test_namespace_without_prefix() {
+        assert_eq!(
+            parse_namespace("@namespace url(http://www.w3.org/2000/svg);"),
+            Ok((
+                "",
+                (None, Value::from("url(http://www.w3.org/2000/svg)")).into()
+            ))
+        )
+    }
+
+    #[test]
     fn test_import() {
         assert_eq!(
             parse_import("@import url('landscape.css') screen and (orientation:landscape);"),
@@ -367,7 +355,7 @@ mod test {
     fn test_import_url() {
         assert_eq!(
             parse_import("@import url('landscape.css');"),
-            Ok(("", (Value::from("url('landscape.css')"), None,).into()))
+            Ok(("", (Value::from("url('landscape.css')"), None).into()))
         )
     }
 }
