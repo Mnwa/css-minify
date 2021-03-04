@@ -10,6 +10,7 @@ use crate::structure::{
 };
 use nom::branch::alt;
 use nom::bytes::complete::{is_not, tag};
+use nom::character::complete::char;
 use nom::combinator::{into, map, map_parser, opt, rest};
 use nom::error::Error as IError;
 use nom::multi::many0;
@@ -105,7 +106,7 @@ pub fn parse_import(input: &str) -> IResult<&str, ImportAt> {
 fn simple_at<'a>(
     prefix: &'a str,
 ) -> impl FnMut(&'a str) -> IResult<&'a str, &'a str, IError<&'a str>> {
-    preceded(tag(prefix), terminated(non_useless(is_not(";")), tag(";")))
+    preceded(tag(prefix), terminated(non_useless(is_not(";")), char(';')))
 }
 
 #[cfg(test)]

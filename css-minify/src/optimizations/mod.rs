@@ -1,4 +1,5 @@
 mod color;
+mod font;
 mod merge_blocks;
 mod merge_m_n_p;
 mod merge_media;
@@ -6,6 +7,7 @@ mod merge_shorthand;
 mod transformer;
 
 use crate::optimizations::color::optimize_color;
+use crate::optimizations::font::FontTransformer;
 use crate::optimizations::merge_blocks::MergeBlocks;
 use crate::optimizations::merge_m_n_p::Merge;
 use crate::optimizations::merge_media::MergeMedia;
@@ -28,6 +30,7 @@ pub struct Minifier {
     merge_shorthand: MergeShortHand,
     media: MergeMedia,
     blocks: MergeBlocks,
+    font: FontTransformer,
 }
 
 impl Minifier {
@@ -50,7 +53,9 @@ impl Minifier {
         }
 
         if level >= Level::One {
-            result = result.map(|blocks| self.transformer.transform_many(blocks))
+            result = result
+                .map(|blocks| self.transformer.transform_many(blocks))
+                .map(|blocks| self.font.transform_many(blocks))
         }
 
         result.map(|blocks| blocks.to_string())
@@ -89,6 +94,7 @@ impl Default for Minifier {
         let merge_shorthand = MergeShortHand::default();
         let media = MergeMedia::default();
         let blocks = MergeBlocks::default();
+        let font = FontTransformer::default();
 
         Minifier {
             merge_m_n_p,
@@ -96,6 +102,7 @@ impl Default for Minifier {
             transformer,
             media,
             blocks,
+            font,
         }
     }
 }
@@ -233,11 +240,12 @@ mod test {
                 #some_id_2, .class {
                     padding: 5px 4px; /* Mega comment */
                     Color: rgb(255, 255, 255);
+                    font-weight: bold;
                 }
             "#,
                     Level::Three
             ),
-            Ok("#some_id,input{padding:5px 3px;color:white}#some_id_2,.class{padding:5px 4px;color:#fff}".into())
+            Ok("#some_id,input{padding:5px 3px;color:white}#some_id_2,.class{padding:5px 4px;color:#fff;font-weight:700}".into())
         )
     }
 

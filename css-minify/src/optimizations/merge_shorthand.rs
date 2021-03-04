@@ -16,26 +16,29 @@ impl Transform for MergeShortHand {
         let mut outline = OutlineShortHand::default();
         let mut transition = TransitionShortHand::default();
 
-        parameters.0.iter().for_each(|(name, value)| {
-            if !parameters.0.contains_key("font") {
-                font.add(name, value.clone());
-            }
-            if !parameters.0.contains_key("list-style") {
-                list.add(name, value.clone());
-            }
-            if !parameters.0.contains_key("background") {
-                background.add(name, value.clone());
-            }
-            if !parameters.0.contains_key("border") {
-                border.add(name, value.clone());
-            }
-            if !parameters.0.contains_key("outline") {
-                outline.add(name, value.clone());
-            }
-            if !parameters.0.contains_key("transition") {
-                transition.add(name, value.clone());
-            }
-        });
+        parameters
+            .0
+            .iter()
+            .for_each(|(name, value): (&Name, &Value)| {
+                if !parameters.0.contains_key("font") {
+                    font.add(name, value.clone());
+                }
+                if !parameters.0.contains_key("list-style") {
+                    list.add(name, value.clone());
+                }
+                if !parameters.0.contains_key("background") {
+                    background.add(name, value.clone());
+                }
+                if !parameters.0.contains_key("border") {
+                    border.add(name, value.clone());
+                }
+                if !parameters.0.contains_key("outline") {
+                    outline.add(name, value.clone());
+                }
+                if !parameters.0.contains_key("transition") {
+                    transition.add(name, value.clone());
+                }
+            });
 
         if font.is_maybe_shorted() {
             parameters
