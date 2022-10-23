@@ -43,7 +43,7 @@ pub fn parse_rgb(input: &str) -> IResult<&str, Color> {
                 )),
                 |(red, green, blue): (&str, &str, &str)| {
                     let color = format!(
-                        "#{:X}{:X}{:X}",
+                        "#{:02X}{:02X}{:02X}",
                         u8::from_str_radix(red, 10).unwrap(),
                         u8::from_str_radix(green, 10).unwrap(),
                         u8::from_str_radix(blue, 10).unwrap(),
@@ -69,6 +69,13 @@ mod test {
         assert_eq!(
             parse_rgb("rgb(255, 255, /* lol */ 255 )"),
             Ok(("", Color("#fff".into())))
+        )
+    }
+    #[test]
+    fn test_small_rgb() {
+        assert_eq!(
+            parse_rgb("rgb(4, 120, 87)"),
+            Ok(("", Color("#047857".into())))
         )
     }
     #[test]
