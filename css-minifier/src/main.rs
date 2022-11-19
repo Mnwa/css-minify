@@ -1,20 +1,20 @@
-use clap::Clap;
+use clap::Parser;
 use css_minify::optimizations::{Level, Minifier};
 use indoc::indoc;
 use std::fs::{read_to_string, write};
 
-#[derive(Clap)]
-#[clap(version = "0.1", author = "Mnwa")]
+#[derive(Parser)]
+#[command(version = "0.1", author = "Mnwa")]
 struct Opts {
-    #[clap(short, long, about = "css which will be minified")]
+    #[arg(short, long, help = "css which will be minified")]
     input: String,
-    #[clap(short, long, about = "output to optimized variant")]
+    #[arg(short, long, help = "output to optimized variant")]
     output: Option<String>,
 
-    #[clap(
+    #[arg(
         short,
         long,
-        about = indoc! {"
+        help = indoc! {"
             Optimization levels:
                 0 - Without optimizations 
                 1 - Remove whitespaces, replace `0.` to `.` and others non dangerous optimizations
