@@ -48,8 +48,8 @@ async fn minify_css(
 async fn main_css(css: web::Data<MinifiedCss>) -> impl Responder {
     HttpResponse::Ok()
         .content_type("text/css; charset=utf-8")
-        .header("Etag", &*css.hash)
-        .body(&css.css)
+        .append_header(("Etag", &*css.hash))
+        .body(css.css.to_string())
 }
 
 #[actix_web::main]
@@ -87,8 +87,8 @@ struct MinifiedCss {
     hash: String,
 }
 
-#[template(path = "index")]
 #[derive(Debug, Default, Clone, Template)]
+#[template(path = "index")]
 struct IndexTemplate {
     input_css: Option<String>,
     output_css: Option<String>,
