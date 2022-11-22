@@ -1,6 +1,6 @@
 use crate::parsers::at::{
-    parse_at, parse_font_face, parse_keyframes, parse_media, parse_page, parse_supports,
-    parse_viewport,
+    parse_at, parse_font_face, parse_keyframes, parse_media, parse_ms_viewport, parse_page,
+    parse_supports, parse_viewport,
 };
 use crate::parsers::block::parse_block;
 use crate::parsers::utils::non_useless;
@@ -25,6 +25,7 @@ pub fn parse_entity(input: &str) -> IResult<&str, CssEntity> {
         into(parse_keyframes),
         into(parse_font_face),
         into(parse_viewport),
+        into(parse_ms_viewport),
         into(parse_supports),
         into(parse_page),
         into(parse_block),

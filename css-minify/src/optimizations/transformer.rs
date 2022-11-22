@@ -79,6 +79,10 @@ pub trait Transform {
                 viewport.parameters = self.transform_parameters(viewport.parameters);
                 CssEntity::Viewport(viewport)
             }
+            CssEntity::MsViewport(mut viewport) => {
+                viewport.parameters = self.transform_parameters(viewport.parameters);
+                CssEntity::MsViewport(viewport)
+            }
             CssEntity::Keyframes(mut kf) => {
                 kf.blocks.0 = kf
                     .blocks

@@ -5,7 +5,7 @@ use crate::parsers::utils::{
     some_block_with_prefix, some_block_with_prefix_and_value, space,
 };
 use crate::structure::{
-    At, CharsetAt, FontFace, ImportAt, KeyframeBlock, KeyframeBlocks, Keyframes, Media,
+    At, CharsetAt, FontFace, ImportAt, KeyframeBlock, KeyframeBlocks, Keyframes, Media, MsViewport,
     NamespaceAt, Page, Supports, Value, Viewport,
 };
 use nom::branch::alt;
@@ -71,6 +71,10 @@ pub fn parse_viewport(input: &str) -> IResult<&str, Viewport> {
     into(some_block_with_prefix("@viewport", parse_parameters))(input)
 }
 
+pub fn parse_ms_viewport(input: &str) -> IResult<&str, MsViewport> {
+    into(some_block_with_prefix("@-ms-viewport", parse_parameters))(input)
+}
+
 pub fn parse_at(input: &str) -> IResult<&str, At> {
     non_useless(alt((
         into(parse_charset),
@@ -113,11 +117,11 @@ fn simple_at<'a>(
 mod test {
     use crate::parsers::at::{
         parse_charset, parse_font_face, parse_import, parse_keyframes, parse_media,
-        parse_namespace, parse_page, parse_supports, parse_viewport,
+        parse_ms_viewport, parse_namespace, parse_page, parse_supports, parse_viewport,
     };
     use crate::structure::{
-        Block, CssEntity, FontFace, KeyframeBlock, Keyframes, Media, Name, Page, Selector,
-        SelectorWithPseudoClasses, Supports, Value, Viewport,
+        Block, CssEntity, FontFace, KeyframeBlock, Keyframes, Media, MsViewport, Name, Page,
+        Selector, SelectorWithPseudoClasses, Supports, Value, Viewport,
     };
     use indexmap::map::IndexMap;
 
@@ -322,6 +326,31 @@ mod test {
             Ok((
                 "",
                 Viewport {
+                    parameters: {
+                        let mut tmp: IndexMap<Name, Value> = IndexMap::new();
+                        tmp.insert("min-width".to_string(), "640px".to_string());
+                        tmp.insert("max-width".to_string(), "800px".to_string());
+                        tmp
+                    }
+                    .into()
+                }
+            ))
+        )
+    }
+
+    #[test]
+    fn test_ms_viewport() {
+        assert_eq!(
+            parse_ms_viewport(
+                r#"
+            @-ms-viewport {
+              min-width: 640px;
+              max-width: 800px;
+            }"#
+            ),
+            Ok((
+                "",
+                MsViewport {
                     parameters: {
                         let mut tmp: IndexMap<Name, Value> = IndexMap::new();
                         tmp.insert("min-width".to_string(), "640px".to_string());

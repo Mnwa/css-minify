@@ -289,4 +289,19 @@ mod test {
             Ok("p:not(.classy){color:red}".into())
         )
     }
+
+    #[test]
+    fn test_block_with_selector_and_pc() {
+        assert_eq!(
+            Minifier::default().minify(
+                r#"
+                    @-ms-viewport {
+                      width: device-width;
+                    }
+                    "#,
+                Level::Three
+            ),
+            Ok("@-ms-viewport {width:device-width}".into())
+        )
+    }
 }

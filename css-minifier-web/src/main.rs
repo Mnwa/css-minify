@@ -71,6 +71,7 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         App::new()
+            .app_data(web::FormConfig::default().limit(134_217_728))
             .app_data(minifier.clone())
             .app_data(output_css.clone())
             .service(index)

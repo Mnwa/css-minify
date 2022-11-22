@@ -1,4 +1,4 @@
-use derive_more::{Deref, DerefMut, From, Into};
+use derive_more::{Deref, DerefMut, Display, From, Into};
 use indexmap::map::IndexMap;
 use std::fmt::Display;
 use std::fmt::Formatter;
@@ -51,6 +51,11 @@ pub struct Viewport {
 }
 
 #[derive(Clone, Eq, PartialEq, Debug, From, Into)]
+pub struct MsViewport {
+    pub parameters: Parameters,
+}
+
+#[derive(Clone, Eq, PartialEq, Debug, From, Into)]
 pub struct NamespaceAt {
     prefix: Option<Value>,
     url: Value,
@@ -74,7 +79,7 @@ pub enum At {
     Charset(CharsetAt),
 }
 
-#[derive(Clone, Eq, PartialEq, Debug, From)]
+#[derive(Clone, Eq, PartialEq, Debug, From, Display)]
 pub enum CssEntity {
     Block(Block),
     Media(Media),
@@ -82,6 +87,7 @@ pub enum CssEntity {
     Supports(Supports),
     FontFace(FontFace),
     Viewport(Viewport),
+    MsViewport(MsViewport),
     Keyframes(Keyframes),
     At(At),
 }
@@ -237,27 +243,18 @@ impl Display for Viewport {
     }
 }
 
+impl Display for MsViewport {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "@-ms-viewport {{{}}}", self.parameters)
+    }
+}
+
 impl Display for Keyframes {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         if self.webkit_prefix {
             write!(f, "@-webkit-keyframes {}{{{}}}", self.name, self.blocks)
         } else {
             write!(f, "@keyframes {}{{{}}}", self.name, self.blocks)
-        }
-    }
-}
-
-impl Display for CssEntity {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        match self {
-            CssEntity::Block(block) => write!(f, "{}", block),
-            CssEntity::Media(media) => write!(f, "{}", media),
-            CssEntity::Page(page) => write!(f, "{}", page),
-            CssEntity::Supports(supports) => write!(f, "{}", supports),
-            CssEntity::FontFace(font_face) => write!(f, "{}", font_face),
-            CssEntity::Viewport(viewport) => write!(f, "{}", viewport),
-            CssEntity::Keyframes(keyframes) => write!(f, "{}", keyframes),
-            CssEntity::At(at) => write!(f, "{}", at),
         }
     }
 }
