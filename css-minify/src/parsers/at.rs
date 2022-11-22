@@ -142,7 +142,7 @@ mod test {
                     entities: vec![CssEntity::Block(Block {
                         selectors: vec![SelectorWithPseudoClasses(
                             Some(Selector::Class("test".into())),
-                            None
+                            vec![]
                         )]
                         .into(),
                         parameters: {
@@ -220,7 +220,7 @@ mod test {
                     entities: vec![CssEntity::Block(Block {
                         selectors: vec![SelectorWithPseudoClasses(
                             Some(Selector::Class("test".into())),
-                            None
+                            vec![]
                         )]
                         .into(),
                         parameters: {

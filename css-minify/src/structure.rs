@@ -115,13 +115,13 @@ pub type Class = String;
 pub type Tag = String;
 
 #[derive(Clone, Ord, PartialOrd, Eq, PartialEq, Debug)]
-pub struct SelectorWithPseudoClasses(pub Option<Selector>, pub Option<PseudoClass>);
+pub struct SelectorWithPseudoClasses(pub Option<Selector>, pub Vec<PseudoClass>);
 impl Display for SelectorWithPseudoClasses {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         if let Some(s) = &self.0 {
             write!(f, "{}", s)?
         }
-        if let Some(pc) = &self.1 {
+        for pc in self.1.iter() {
             write!(f, "{}", pc)?
         }
 
@@ -352,8 +352,8 @@ mod test {
         let blocks: Blocks = vec![
             Block {
                 selectors: vec![
-                    SelectorWithPseudoClasses(Some(Selector::Id("some_id".into())), None),
-                    SelectorWithPseudoClasses(Some(Selector::Tag("input".into())), None),
+                    SelectorWithPseudoClasses(Some(Selector::Id("some_id".into())), vec![]),
+                    SelectorWithPseudoClasses(Some(Selector::Tag("input".into())), vec![]),
                 ]
                 .into(),
                 parameters: {
@@ -365,8 +365,8 @@ mod test {
             },
             Block {
                 selectors: vec![
-                    SelectorWithPseudoClasses(Some(Selector::Id("some_id_2".into())), None),
-                    SelectorWithPseudoClasses(Some(Selector::Class("class".into())), None),
+                    SelectorWithPseudoClasses(Some(Selector::Id("some_id_2".into())), vec![]),
+                    SelectorWithPseudoClasses(Some(Selector::Class("class".into())), vec![]),
                 ]
                 .into(),
                 parameters: {

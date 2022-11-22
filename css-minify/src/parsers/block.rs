@@ -36,8 +36,8 @@ mod test {
                 "",
                 Block {
                     selectors: vec![
-                        SelectorWithPseudoClasses(Some(Selector::Id("some_id".into())), None),
-                        SelectorWithPseudoClasses(Some(Selector::Tag("input".into())), None),
+                        SelectorWithPseudoClasses(Some(Selector::Id("some_id".into())), vec![]),
+                        SelectorWithPseudoClasses(Some(Selector::Tag("input".into())), vec![]),
                     ]
                     .into(),
                     parameters: {
@@ -66,8 +66,8 @@ mod test {
                 "",
                 Block {
                     selectors: vec![
-                        SelectorWithPseudoClasses(Some(Selector::Id("some_id".into())), None),
-                        SelectorWithPseudoClasses(Some(Selector::Tag("input".into())), None),
+                        SelectorWithPseudoClasses(Some(Selector::Id("some_id".into())), vec![]),
+                        SelectorWithPseudoClasses(Some(Selector::Tag("input".into())), vec![]),
                     ]
                     .into(),
                     parameters: {

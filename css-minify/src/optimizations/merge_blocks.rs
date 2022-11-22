@@ -77,7 +77,7 @@ mod test {
                 CssEntity::Block(Block {
                     selectors: vec![SelectorWithPseudoClasses(
                         Some(Selector::Class("test".into())),
-                        None
+                        vec![]
                     )]
                     .into(),
                     parameters: {
@@ -89,7 +89,7 @@ mod test {
                 CssEntity::Block(Block {
                     selectors: vec![SelectorWithPseudoClasses(
                         Some(Selector::Class("test".into())),
-                        None
+                        vec![]
                     )]
                     .into(),
                     parameters: {
@@ -102,7 +102,7 @@ mod test {
             CssEntities(vec![CssEntity::Block(Block {
                 selectors: vec![SelectorWithPseudoClasses(
                     Some(Selector::Class("test".into())),
-                    None
+                    vec![]
                 )]
                 .into(),
                 parameters: {

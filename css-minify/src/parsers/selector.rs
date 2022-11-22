@@ -4,7 +4,7 @@ use nom::branch::alt;
 use nom::bytes::complete::is_not;
 use nom::character::complete::char;
 use nom::combinator::{map, opt};
-use nom::multi::{many_m_n, separated_list1};
+use nom::multi::{many0, many_m_n, separated_list1};
 use nom::sequence::{delimited, pair, preceded};
 use nom::IResult;
 
@@ -22,10 +22,14 @@ pub fn parse_selector_with_pseudo_class(input: &str) -> IResult<&str, SelectorWi
     map(
         pair(
             non_useless(opt(parse_selector)),
-            non_useless(opt(parse_pseudo_class)),
+            non_useless(parse_pseudo_classes),
         ),
         |(selector, pc)| SelectorWithPseudoClasses(selector, pc),
     )(input)
+}
+
+pub fn parse_pseudo_classes(input: &str) -> IResult<&str, Vec<PseudoClass>> {
+    many0(parse_pseudo_class)(input)
 }
 
 pub fn parse_pseudo_class(input: &str) -> IResult<&str, PseudoClass> {
@@ -104,9 +108,9 @@ mod test {
             Ok((
                 "",
                 vec![
-                    SelectorWithPseudoClasses(Some(Selector::Id("some_id".into())), None),
-                    SelectorWithPseudoClasses(Some(Selector::Class("some_class".into())), None),
-                    SelectorWithPseudoClasses(Some(Selector::Tag("input".into())), None),
+                    SelectorWithPseudoClasses(Some(Selector::Id("some_id".into())), vec![]),
+                    SelectorWithPseudoClasses(Some(Selector::Class("some_class".into())), vec![]),
+                    SelectorWithPseudoClasses(Some(Selector::Tag("input".into())), vec![]),
                 ]
                 .into()
             ))
@@ -121,11 +125,11 @@ mod test {
                 "",
                 vec![SelectorWithPseudoClasses(
                     Some(Selector::Id("some_id".into())),
-                    Some(PseudoClass {
+                    vec![PseudoClass {
                         name: "only-child".to_string(),
                         params: None,
                         next: None,
-                    })
+                    }]
                 ),]
                 .into()
             ))
@@ -140,11 +144,11 @@ mod test {
                 "",
                 vec![SelectorWithPseudoClasses(
                     Some(Selector::Id("some_id".into())),
-                    Some(PseudoClass {
+                    vec![PseudoClass {
                         name: "nth-child".to_string(),
                         params: Some("4n".to_string()),
                         next: None,
-                    })
+                    }]
                 ),]
                 .into()
             ))
@@ -159,11 +163,11 @@ mod test {
                 "",
                 vec![SelectorWithPseudoClasses(
                     None,
-                    Some(PseudoClass {
+                    vec![PseudoClass {
                         name: "is".to_string(),
                         params: Some("nav, .posts".to_string()),
                         next: None,
-                    })
+                    }]
                 ),]
                 .into()
             ))
@@ -178,11 +182,11 @@ mod test {
                 "",
                 vec![SelectorWithPseudoClasses(
                     None,
-                    Some(PseudoClass {
+                    vec![PseudoClass {
                         name: "is".to_string(),
                         params: Some(".test".to_string()),
                         next: Some("a".to_string()),
-                    })
+                    }]
                 ),]
                 .into()
             ))
@@ -197,11 +201,37 @@ mod test {
                 "",
                 vec![SelectorWithPseudoClasses(
                     None,
-                    Some(PseudoClass {
+                    vec![PseudoClass {
                         name: "is".to_string(),
                         params: Some(".test".to_string()),
                         next: Some("a".to_string()),
-                    })
+                    }]
+                ),]
+                .into()
+            ))
+        );
+    }
+
+    #[test]
+    fn test_pc_nulti() {
+        assert_eq!(
+            parse_selectors("a:not([href]):not([tabindex])"),
+            Ok((
+                "",
+                vec![SelectorWithPseudoClasses(
+                    Some(Selector::Tag("a".into())),
+                    vec![
+                        PseudoClass {
+                            name: "not".to_string(),
+                            params: Some("[href]".to_string()),
+                            next: None,
+                        },
+                        PseudoClass {
+                            name: "not".to_string(),
+                            params: Some("[tabindex]".to_string()),
+                            next: None,
+                        }
+                    ]
                 ),]
                 .into()
             ))
