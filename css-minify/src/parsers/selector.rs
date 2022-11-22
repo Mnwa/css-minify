@@ -4,7 +4,7 @@ use nom::branch::alt;
 use nom::bytes::complete::is_not;
 use nom::character::complete::char;
 use nom::combinator::{map, opt};
-use nom::multi::separated_list1;
+use nom::multi::{many_m_n, separated_list1};
 use nom::sequence::{delimited, pair, preceded};
 use nom::IResult;
 
@@ -44,7 +44,10 @@ pub fn parse_pseudo_class(input: &str) -> IResult<&str, PseudoClass> {
 }
 
 pub fn parse_pseudo_class_name(input: &str) -> IResult<&str, String> {
-    map(preceded(char(':'), is_not("(,{:")), |i: &str| i.to_string())(input)
+    map(
+        preceded(many_m_n(1, 2, char(':')), is_not("(,{:")),
+        |i: &str| i.to_string(),
+    )(input)
 }
 
 pub fn parse_pseudo_class_params(input: &str) -> IResult<&str, String> {
@@ -171,6 +174,25 @@ mod test {
     fn test_pc_selector() {
         assert_eq!(
             parse_selectors(":is(.test) a"),
+            Ok((
+                "",
+                vec![SelectorWithPseudoClasses(
+                    None,
+                    Some(PseudoClass {
+                        name: "is".to_string(),
+                        params: Some(".test".to_string()),
+                        next: Some("a".to_string()),
+                    })
+                ),]
+                .into()
+            ))
+        );
+    }
+
+    #[test]
+    fn test_pc_double_dots() {
+        assert_eq!(
+            parse_selectors("::is(.test) a"),
             Ok((
                 "",
                 vec![SelectorWithPseudoClasses(
