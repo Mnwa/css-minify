@@ -73,7 +73,9 @@ impl Transform for MergeMedia {
 mod test {
     use crate::optimizations::merge_media::MergeMedia;
     use crate::optimizations::transformer::Transform;
-    use crate::structure::{Block, CssEntities, CssEntity, Media, Selector, Value};
+    use crate::structure::{
+        Block, CssEntities, CssEntity, Media, Selector, SelectorWithPseudoClasses, Value,
+    };
 
     #[test]
     fn test_media() {
@@ -82,7 +84,11 @@ mod test {
                 CssEntity::Media(Media {
                     screen: Value::from("only screen and (max-width: 992px)"),
                     entities: vec![CssEntity::Block(Block {
-                        selectors: vec![Selector::Class("test".into())].into(),
+                        selectors: vec![SelectorWithPseudoClasses(
+                            Some(Selector::Class("test".into())),
+                            None
+                        )]
+                        .into(),
                         parameters: Default::default()
                     })]
                     .into()
@@ -90,7 +96,11 @@ mod test {
                 CssEntity::Media(Media {
                     screen: Value::from("only screen and (max-width: 992px)"),
                     entities: vec![CssEntity::Block(Block {
-                        selectors: vec![Selector::Class("test2".into())].into(),
+                        selectors: vec![SelectorWithPseudoClasses(
+                            Some(Selector::Class("test2".into())),
+                            None
+                        )]
+                        .into(),
                         parameters: Default::default()
                     })]
                     .into()
@@ -100,11 +110,19 @@ mod test {
                 screen: Value::from("only screen and (max-width:992px)"),
                 entities: vec![
                     CssEntity::Block(Block {
-                        selectors: vec![Selector::Class("test".into())].into(),
+                        selectors: vec![SelectorWithPseudoClasses(
+                            Some(Selector::Class("test".into())),
+                            None
+                        )]
+                        .into(),
                         parameters: Default::default()
                     }),
                     CssEntity::Block(Block {
-                        selectors: vec![Selector::Class("test2".into())].into(),
+                        selectors: vec![SelectorWithPseudoClasses(
+                            Some(Selector::Class("test2".into())),
+                            None
+                        )]
+                        .into(),
                         parameters: Default::default()
                     })
                 ]

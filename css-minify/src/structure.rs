@@ -87,7 +87,7 @@ pub enum CssEntity {
 }
 
 #[derive(Clone, Eq, PartialEq, Default, Debug, Deref, DerefMut, From, Into)]
-pub struct Selectors(pub(crate) Vec<Selector>);
+pub struct Selectors(pub(crate) Vec<SelectorWithPseudoClasses>);
 
 #[derive(Clone, Eq, PartialEq, Default, Debug, Deref, DerefMut, From, Into)]
 pub struct Parameters(pub(crate) IndexMap<Name, Value>);
@@ -107,6 +107,42 @@ pub type Value = String;
 pub type Id = String;
 pub type Class = String;
 pub type Tag = String;
+
+#[derive(Clone, Ord, PartialOrd, Eq, PartialEq, Debug)]
+pub struct SelectorWithPseudoClasses(pub Option<Selector>, pub Option<PseudoClass>);
+impl Display for SelectorWithPseudoClasses {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        if let Some(s) = &self.0 {
+            write!(f, "{}", s)?
+        }
+        if let Some(pc) = &self.1 {
+            write!(f, "{}", pc)?
+        }
+
+        Ok(())
+    }
+}
+
+#[derive(Clone, Ord, PartialOrd, Eq, PartialEq, Debug)]
+pub struct PseudoClass {
+    pub name: String,
+    pub params: Option<String>,
+    pub next: Option<String>,
+}
+
+impl Display for PseudoClass {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, ":{}", self.name)?;
+        if let Some(params) = &self.params {
+            write!(f, "({})", params)?;
+        }
+        if let Some(next) = &self.next {
+            write!(f, " {}", next)?;
+        }
+
+        Ok(())
+    }
+}
 
 #[derive(Clone, Ord, PartialOrd, Eq, PartialEq, Debug)]
 pub enum Selector {
@@ -311,7 +347,7 @@ impl Display for CssEntities {
 
 #[cfg(test)]
 mod test {
-    use crate::structure::{Block, Blocks, Selector};
+    use crate::structure::{Block, Blocks, Selector, SelectorWithPseudoClasses};
     use indexmap::map::IndexMap;
 
     #[test]
@@ -319,8 +355,8 @@ mod test {
         let blocks: Blocks = vec![
             Block {
                 selectors: vec![
-                    Selector::Id("some_id".into()),
-                    Selector::Tag("input".into()),
+                    SelectorWithPseudoClasses(Some(Selector::Id("some_id".into())), None),
+                    SelectorWithPseudoClasses(Some(Selector::Tag("input".into())), None),
                 ]
                 .into(),
                 parameters: {
@@ -332,8 +368,8 @@ mod test {
             },
             Block {
                 selectors: vec![
-                    Selector::Id("some_id_2".into()),
-                    Selector::Class("class".into()),
+                    SelectorWithPseudoClasses(Some(Selector::Id("some_id_2".into())), None),
+                    SelectorWithPseudoClasses(Some(Selector::Class("class".into())), None),
                 ]
                 .into(),
                 parameters: {

@@ -117,7 +117,7 @@ mod test {
     };
     use crate::structure::{
         Block, CssEntity, FontFace, KeyframeBlock, Keyframes, Media, Name, Page, Selector,
-        Supports, Value, Viewport,
+        SelectorWithPseudoClasses, Supports, Value, Viewport,
     };
     use indexmap::map::IndexMap;
 
@@ -136,7 +136,11 @@ mod test {
                 Media {
                     screen: Value::from("only screen and (max-width: 992px)"),
                     entities: vec![CssEntity::Block(Block {
-                        selectors: vec![Selector::Class("test".into())].into(),
+                        selectors: vec![SelectorWithPseudoClasses(
+                            Some(Selector::Class("test".into())),
+                            None
+                        )]
+                        .into(),
                         parameters: {
                             let mut tmp = IndexMap::new();
                             tmp.insert("min-height".into(), "68px".into());
@@ -210,7 +214,11 @@ mod test {
                 Supports {
                     conditions: Value::from("(-ms-ime-align: auto)"),
                     entities: vec![CssEntity::Block(Block {
-                        selectors: vec![Selector::Class("test".into())].into(),
+                        selectors: vec![SelectorWithPseudoClasses(
+                            Some(Selector::Class("test".into())),
+                            None
+                        )]
+                        .into(),
                         parameters: {
                             let mut tmp = IndexMap::new();
                             tmp.insert("min-height".into(), "68px".into());

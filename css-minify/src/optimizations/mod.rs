@@ -274,4 +274,19 @@ mod test {
             "Invalid block at line 6"
         )
     }
+
+    #[test]
+    fn test_block_with_modificator_selector() {
+        assert_eq!(
+            Minifier::default().minify(
+                r#"
+                    p:not(.classy) {
+                        color: red;
+                    }
+                    "#,
+                Level::Three
+            ),
+            Ok("p:not(.classy){color:red}".into())
+        )
+    }
 }

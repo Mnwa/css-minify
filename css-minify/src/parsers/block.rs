@@ -17,7 +17,7 @@ pub fn parse_block(input: &str) -> IResult<&str, Block> {
 mod test {
     use crate::parsers::block::parse_block;
     use crate::parsers::utils::non_useless;
-    use crate::structure::{Block, Selector};
+    use crate::structure::{Block, Selector, SelectorWithPseudoClasses};
     use indexmap::map::IndexMap;
 
     #[test]
@@ -36,8 +36,8 @@ mod test {
                 "",
                 Block {
                     selectors: vec![
-                        Selector::Id("some_id".into()),
-                        Selector::Tag("input".into())
+                        SelectorWithPseudoClasses(Some(Selector::Id("some_id".into())), None),
+                        SelectorWithPseudoClasses(Some(Selector::Tag("input".into())), None),
                     ]
                     .into(),
                     parameters: {
@@ -66,8 +66,8 @@ mod test {
                 "",
                 Block {
                     selectors: vec![
-                        Selector::Id("some_id".into()),
-                        Selector::Tag("input".into())
+                        SelectorWithPseudoClasses(Some(Selector::Id("some_id".into())), None),
+                        SelectorWithPseudoClasses(Some(Selector::Tag("input".into())), None),
                     ]
                     .into(),
                     parameters: {

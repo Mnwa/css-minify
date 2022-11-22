@@ -13,7 +13,7 @@ impl Transform for FontTransformer {
                 *value = value
                     .replace("normal", "400")
                     .replace("bold", "700")
-                    .replace("\"", "");
+                    .replace('\"', "");
             });
         parameters
     }
@@ -23,7 +23,7 @@ impl Transform for FontTransformer {
 mod test {
     use crate::optimizations::font::FontTransformer;
     use crate::optimizations::transformer::Transform;
-    use crate::structure::{Block, CssEntities, CssEntity, Selector};
+    use crate::structure::{Block, CssEntities, CssEntity, Selector, SelectorWithPseudoClasses};
     use indexmap::map::IndexMap;
 
     #[test]
@@ -31,7 +31,11 @@ mod test {
         assert_eq!(
             FontTransformer::default().transform_many(CssEntities(vec![
                 CssEntity::Block(Block {
-                    selectors: vec![Selector::Class("test".into())].into(),
+                    selectors: vec![SelectorWithPseudoClasses(
+                        Some(Selector::Class("test".into())),
+                        None
+                    )]
+                    .into(),
                     parameters: {
                         let mut tmp = IndexMap::new();
                         tmp.insert(
@@ -42,7 +46,11 @@ mod test {
                     }
                 }),
                 CssEntity::Block(Block {
-                    selectors: vec![Selector::Class("test".into())].into(),
+                    selectors: vec![SelectorWithPseudoClasses(
+                        Some(Selector::Class("test".into())),
+                        None
+                    )]
+                    .into(),
                     parameters: {
                         let mut tmp = IndexMap::new();
                         tmp.insert(
@@ -56,7 +64,11 @@ mod test {
             ])),
             CssEntities(vec![
                 CssEntity::Block(Block {
-                    selectors: vec![Selector::Class("test".into())].into(),
+                    selectors: vec![SelectorWithPseudoClasses(
+                        Some(Selector::Class("test".into())),
+                        None
+                    )]
+                    .into(),
                     parameters: {
                         let mut tmp = IndexMap::new();
                         tmp.insert(
@@ -67,7 +79,11 @@ mod test {
                     }
                 }),
                 CssEntity::Block(Block {
-                    selectors: vec![Selector::Class("test".into())].into(),
+                    selectors: vec![SelectorWithPseudoClasses(
+                        Some(Selector::Class("test".into())),
+                        None
+                    )]
+                    .into(),
                     parameters: {
                         let mut tmp = IndexMap::new();
                         tmp.insert(

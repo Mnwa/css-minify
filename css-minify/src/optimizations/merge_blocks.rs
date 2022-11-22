@@ -67,7 +67,7 @@ impl Transform for MergeBlocks {
 mod test {
     use crate::optimizations::merge_blocks::MergeBlocks;
     use crate::optimizations::transformer::Transform;
-    use crate::structure::{Block, CssEntities, CssEntity, Selector};
+    use crate::structure::{Block, CssEntities, CssEntity, Selector, SelectorWithPseudoClasses};
     use indexmap::map::IndexMap;
 
     #[test]
@@ -75,7 +75,11 @@ mod test {
         assert_eq!(
             MergeBlocks::default().transform_many(CssEntities(vec![
                 CssEntity::Block(Block {
-                    selectors: vec![Selector::Class("test".into())].into(),
+                    selectors: vec![SelectorWithPseudoClasses(
+                        Some(Selector::Class("test".into())),
+                        None
+                    )]
+                    .into(),
                     parameters: {
                         let mut tmp = IndexMap::new();
                         tmp.insert("background-color".into(), "#f64e60 !important".into());
@@ -83,7 +87,11 @@ mod test {
                     }
                 }),
                 CssEntity::Block(Block {
-                    selectors: vec![Selector::Class("test".into())].into(),
+                    selectors: vec![SelectorWithPseudoClasses(
+                        Some(Selector::Class("test".into())),
+                        None
+                    )]
+                    .into(),
                     parameters: {
                         let mut tmp = IndexMap::new();
                         tmp.insert("color".into(), "#f64e60 !important".into());
@@ -92,7 +100,11 @@ mod test {
                 }),
             ])),
             CssEntities(vec![CssEntity::Block(Block {
-                selectors: vec![Selector::Class("test".into())].into(),
+                selectors: vec![SelectorWithPseudoClasses(
+                    Some(Selector::Class("test".into())),
+                    None
+                )]
+                .into(),
                 parameters: {
                     let mut tmp = IndexMap::new();
                     tmp.insert("background-color".into(), "#f64e60 !important".into());
