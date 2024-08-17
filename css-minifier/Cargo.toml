@@ -14,5 +14,5 @@ license = "Apache-2.0/MIT"
 [dependencies]
 css-minify = { version = "0.3", path = "../css-minify" }
 clap = { version = "^4", features = ["derive"] }
-shellexpand = "2.1"
-indoc = "1.0"
+shellexpand = "3.1"
+indoc = "2.0"

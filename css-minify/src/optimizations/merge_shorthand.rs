@@ -44,12 +44,12 @@ impl Transform for MergeShortHand {
             parameters
                 .0
                 .insert(String::from("font"), font.to_string().trim().to_string());
-            parameters.0.remove("font-style");
-            parameters.0.remove("font-variant");
-            parameters.0.remove("font-weight");
-            parameters.0.remove("font-size");
-            parameters.0.remove("line-height");
-            parameters.0.remove("font-family");
+            parameters.0.swap_remove("font-style");
+            parameters.0.swap_remove("font-variant");
+            parameters.0.swap_remove("font-weight");
+            parameters.0.swap_remove("font-size");
+            parameters.0.swap_remove("line-height");
+            parameters.0.swap_remove("font-family");
         }
 
         if list.is_maybe_shorted() {
@@ -57,9 +57,9 @@ impl Transform for MergeShortHand {
                 String::from("list-style"),
                 list.to_string().trim().to_string(),
             );
-            parameters.0.remove("list-style-type");
-            parameters.0.remove("list-style-position");
-            parameters.0.remove("list-style-image");
+            parameters.0.swap_remove("list-style-type");
+            parameters.0.swap_remove("list-style-position");
+            parameters.0.swap_remove("list-style-image");
         }
 
         if background.is_maybe_shorted() {
@@ -67,11 +67,11 @@ impl Transform for MergeShortHand {
                 String::from("background"),
                 background.to_string().trim().to_string(),
             );
-            parameters.0.remove("background-attachment");
-            parameters.0.remove("background-color");
-            parameters.0.remove("background-position");
-            parameters.0.remove("background-repeat");
-            parameters.0.remove("background-image");
+            parameters.0.swap_remove("background-attachment");
+            parameters.0.swap_remove("background-color");
+            parameters.0.swap_remove("background-position");
+            parameters.0.swap_remove("background-repeat");
+            parameters.0.swap_remove("background-image");
         }
 
         if border.is_maybe_shorted() {
@@ -79,9 +79,9 @@ impl Transform for MergeShortHand {
                 String::from("border"),
                 border.to_string().trim().to_string(),
             );
-            parameters.0.remove("border-width");
-            parameters.0.remove("border-style");
-            parameters.0.remove("border-color");
+            parameters.0.swap_remove("border-width");
+            parameters.0.swap_remove("border-style");
+            parameters.0.swap_remove("border-color");
         }
 
         if outline.is_maybe_shorted() {
@@ -89,9 +89,9 @@ impl Transform for MergeShortHand {
                 String::from("outline"),
                 outline.to_string().trim().to_string(),
             );
-            parameters.0.remove("outline-width");
-            parameters.0.remove("outline-style");
-            parameters.0.remove("outline-color");
+            parameters.0.swap_remove("outline-width");
+            parameters.0.swap_remove("outline-style");
+            parameters.0.swap_remove("outline-color");
         }
 
         if transition.is_maybe_shorted() {
@@ -99,10 +99,10 @@ impl Transform for MergeShortHand {
                 String::from("transition"),
                 transition.to_string().trim().to_string(),
             );
-            parameters.0.remove("transition-property");
-            parameters.0.remove("transition-duration");
-            parameters.0.remove("transition-delay");
-            parameters.0.remove("transition-timing-function");
+            parameters.0.swap_remove("transition-property");
+            parameters.0.swap_remove("transition-duration");
+            parameters.0.swap_remove("transition-delay");
+            parameters.0.swap_remove("transition-timing-function");
         }
 
         parameters

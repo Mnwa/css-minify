@@ -15,4 +15,4 @@ license = "Apache-2.0/MIT"
 [dependencies]
 nom = "7"
 derive_more = { version = "1.0", features = ["from", "deref", "deref_mut", "display", "into"] }
-indexmap = "1"
+indexmap = "2"

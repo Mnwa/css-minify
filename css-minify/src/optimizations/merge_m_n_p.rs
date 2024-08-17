@@ -27,17 +27,17 @@ impl Transform for Merge {
 
         if margin.is_may_be_merged() {
             parameters.insert(String::from("margin"), margin.to_string());
-            parameters.0.remove("margin-top");
-            parameters.0.remove("margin-bottom");
-            parameters.0.remove("margin-left");
-            parameters.0.remove("margin-right");
+            parameters.0.swap_remove("margin-top");
+            parameters.0.swap_remove("margin-bottom");
+            parameters.0.swap_remove("margin-left");
+            parameters.0.swap_remove("margin-right");
         }
         if padding.is_may_be_merged() {
             parameters.insert(String::from("padding"), padding.to_string());
-            parameters.0.remove("padding-top");
-            parameters.0.remove("padding-bottom");
-            parameters.0.remove("padding-left");
-            parameters.0.remove("padding-right");
+            parameters.0.swap_remove("padding-top");
+            parameters.0.swap_remove("padding-bottom");
+            parameters.0.swap_remove("padding-left");
+            parameters.0.swap_remove("padding-right");
         }
 
         parameters
