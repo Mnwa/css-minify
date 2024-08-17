@@ -1,6 +1,6 @@
 [package]
 name = "css-minifier"
-version = "0.5.1"
+version = "0.5.2"
 authors = ["Mnwa <mihan@panfilov.biz>"]
 edition = "2021"
 description = "CLI wrapper for css-minify library"
