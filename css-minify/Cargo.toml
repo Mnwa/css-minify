@@ -1,6 +1,6 @@
 [package]
 name = "css-minify"
-version = "0.5.0"
+version = "0.5.1"
 authors = ["Mnwa <mihan@panfilov.biz>"]
 edition = "2021"
 description = "CSS parser and minificator based on nom"
