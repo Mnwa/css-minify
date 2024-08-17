@@ -11,21 +11,20 @@ use nom::IResult;
 pub struct Color(String);
 
 pub fn optimize_color(input: &str) -> Color {
-    let color = alt((parse_hex, parse_rgb))(input)
+    alt((parse_hex, parse_rgb))(input)
         .map(|(postfix, mut color)| {
             if postfix.trim() == "!important" {
                 color.0 += "!important"
             }
             color
         })
-        .unwrap_or_else(|_| Color(input.into()));
-    color
+        .unwrap_or_else(|_| Color(input.into()))
 }
 
 pub fn parse_hex(input: &str) -> IResult<&str, Color> {
     map(recognize(preceded(tag("#"), hex_digit1)), |color: &str| {
         if color.len() > 3 && color[1..4] == color[4..] {
-            return Color((&color[..4]).to_lowercase());
+            return Color(color[..4].to_lowercase());
         }
         Color(color.to_lowercase())
     })(input)
@@ -44,13 +43,13 @@ pub fn parse_rgb(input: &str) -> IResult<&str, Color> {
                 |(red, green, blue): (&str, &str, &str)| {
                     let color = format!(
                         "#{:02X}{:02X}{:02X}",
-                        u8::from_str_radix(red, 10).unwrap(),
-                        u8::from_str_radix(green, 10).unwrap(),
-                        u8::from_str_radix(blue, 10).unwrap(),
+                        str::parse::<u8>(red).unwrap(),
+                        str::parse::<u8>(green).unwrap(),
+                        str::parse::<u8>(blue).unwrap(),
                     );
 
                     if color[1..4] == color[4..] {
-                        return Color((&color[..4]).to_lowercase());
+                        return Color(color[..4].to_lowercase());
                     }
                     Color(color.to_lowercase())
                 },

@@ -43,7 +43,12 @@ pub fn parse_pseudo_class(input: &str) -> IResult<&str, PseudoClass> {
                 i.map(|i| i.to_string())
             }),
         ),
-        |(((prefix, name), params), next)| PseudoClass { prefix, name, params, next },
+        |(((prefix, name), params), next)| PseudoClass {
+            prefix,
+            name,
+            params,
+            next,
+        },
     )(input)
 }
 
@@ -112,7 +117,7 @@ mod test {
                     SelectorWithPseudoClasses(Some(Selector::Class("some_class".into())), vec![]),
                     SelectorWithPseudoClasses(Some(Selector::Tag("input".into())), vec![]),
                 ]
-                    .into()
+                .into()
             ))
         );
     }
@@ -131,8 +136,8 @@ mod test {
                         params: None,
                         next: None,
                     }],
-                ), ]
-                    .into()
+                ),]
+                .into()
             ))
         );
     }
@@ -151,8 +156,8 @@ mod test {
                         params: Some("4n".to_string()),
                         next: None,
                     }],
-                ), ]
-                    .into()
+                ),]
+                .into()
             ))
         );
     }
@@ -171,8 +176,8 @@ mod test {
                         params: Some("nav, .posts".to_string()),
                         next: None,
                     }],
-                ), ]
-                    .into()
+                ),]
+                .into()
             ))
         );
     }
@@ -191,8 +196,8 @@ mod test {
                         params: Some(".test".to_string()),
                         next: Some("a".to_string()),
                     }],
-                ), ]
-                    .into()
+                ),]
+                .into()
             ))
         );
     }
@@ -211,8 +216,8 @@ mod test {
                         params: Some(".test".to_string()),
                         next: Some("a".to_string()),
                     }],
-                ), ]
-                    .into()
+                ),]
+                .into()
             ))
         );
     }
@@ -239,8 +244,8 @@ mod test {
                             next: None,
                         },
                     ],
-                ), ]
-                    .into()
+                ),]
+                .into()
             ))
         );
     }

@@ -356,7 +356,7 @@ mod test {
                     SelectorWithPseudoClasses(Some(Selector::Id("some_id".into())), vec![]),
                     SelectorWithPseudoClasses(Some(Selector::Tag("input".into())), vec![]),
                 ]
-                    .into(),
+                .into(),
                 parameters: {
                     let mut tmp = IndexMap::new();
                     tmp.insert("padding".into(), "5px 3px".into());
@@ -369,7 +369,7 @@ mod test {
                     SelectorWithPseudoClasses(Some(Selector::Id("some_id_2".into())), vec![]),
                     SelectorWithPseudoClasses(Some(Selector::Class("class".into())), vec![]),
                 ]
-                    .into(),
+                .into(),
                 parameters: {
                     let mut tmp = IndexMap::new();
                     tmp.insert("padding".into(), "5px 4px".into());
@@ -378,7 +378,7 @@ mod test {
                 },
             },
         ]
-            .into();
+        .into();
         assert_eq!(format!("{}", blocks), "#some_id,input{padding:5px 3px;color:white}#some_id_2,.class{padding:5px 4px;color:black}")
     }
 }

@@ -29,37 +29,30 @@ mod test {
     #[test]
     fn test_blocks() {
         assert_eq!(
-            FontTransformer::default().transform_many(CssEntities(vec![
-                CssEntity::Block(Block {
-                    selectors: vec![SelectorWithPseudoClasses(
-                        Some(Selector::Class("test".into())),
-                        vec![],
-                    )]
-                        .into(),
-                    parameters: {
-                        let mut tmp = IndexMap::new();
-                        tmp.insert(
-                            "font-weight".into(),
-                            "bold".into(),
-                        );
-                        tmp.into()
-                    },
-                }),
-            ])),
-            CssEntities(vec![
-                CssEntity::Block(Block {
-                    selectors: vec![SelectorWithPseudoClasses(
-                        Some(Selector::Class("test".into())),
-                        vec![],
-                    )]
-                        .into(),
-                    parameters: {
-                        let mut tmp = IndexMap::new();
-                        tmp.insert("font-weight".into(), "700".into());
-                        tmp.into()
-                    },
-                }),
-            ])
+            FontTransformer::default().transform_many(CssEntities(vec![CssEntity::Block(Block {
+                selectors: vec![SelectorWithPseudoClasses(
+                    Some(Selector::Class("test".into())),
+                    vec![],
+                )]
+                .into(),
+                parameters: {
+                    let mut tmp = IndexMap::new();
+                    tmp.insert("font-weight".into(), "bold".into());
+                    tmp.into()
+                },
+            }),])),
+            CssEntities(vec![CssEntity::Block(Block {
+                selectors: vec![SelectorWithPseudoClasses(
+                    Some(Selector::Class("test".into())),
+                    vec![],
+                )]
+                .into(),
+                parameters: {
+                    let mut tmp = IndexMap::new();
+                    tmp.insert("font-weight".into(), "700".into());
+                    tmp.into()
+                },
+            }),])
         )
     }
 }

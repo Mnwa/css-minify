@@ -46,7 +46,7 @@ fn main() {
     let size_rate = ((size_diff as f64) / (input_file.len() as f64) * 100f64) as i64;
     let mut prefix = "bytes";
     if size_diff > 1024 {
-        size_diff = size_diff / 1024;
+        size_diff /= 1024;
         prefix = "kilobytes"
     }
     println!("You saved: {}% ({} {})", size_rate, size_diff, prefix);

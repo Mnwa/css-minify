@@ -70,7 +70,10 @@ pub fn space(s: &str) -> IResult<&str, &str> {
     is_a(" \t\r\n")(s)
 }
 
-pub fn between<'a>(opener: &'a str, closer: &'a str) -> impl FnMut(&'a str) -> IResult<&'a str, &'a str> + 'a {
+pub fn between<'a>(
+    opener: &'a str,
+    closer: &'a str,
+) -> impl FnMut(&'a str) -> IResult<&'a str, &'a str> + 'a {
     delimited(tag(opener), take_until(closer), tag(closer))
 }
 

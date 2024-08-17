@@ -90,11 +90,11 @@ impl Default for Minifier {
             name.to_lowercase()
         })));
 
-        let merge_m_n_p = Merge::default();
-        let merge_shorthand = MergeShortHand::default();
-        let media = MergeMedia::default();
-        let blocks = MergeBlocks::default();
-        let font = FontTransformer::default();
+        let merge_m_n_p = Merge;
+        let merge_shorthand = MergeShortHand;
+        let media = MergeMedia;
+        let blocks = MergeBlocks;
+        let font = FontTransformer;
 
         Minifier {
             merge_m_n_p,

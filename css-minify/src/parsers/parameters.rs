@@ -2,8 +2,8 @@ use crate::parsers::utils::{between, is_not_block_ending, non_useless, space};
 use crate::structure::{Name, Parameters, Value};
 use indexmap::map::IndexMap;
 use nom::branch::alt;
-use nom::bytes::complete::{is_not};
-use nom::character::complete::{char};
+use nom::bytes::complete::is_not;
+use nom::character::complete::char;
 use nom::combinator::{map, peek, recognize};
 use nom::multi::{many0, many1};
 use nom::sequence::{separated_pair, terminated};
@@ -19,11 +19,7 @@ pub fn parse_parameters(input: &str) -> IResult<&str, Parameters> {
 pub fn parse_parameter(input: &str) -> IResult<&str, (Name, Value)> {
     map(
         terminated(
-            separated_pair(
-                parse_key,
-                char(':'),
-                parse_value,
-            ),
+            separated_pair(parse_key, char(':'), parse_value),
             alt((char(';'), peek(char('}')))),
         ),
         |(name, value)| (name.trim().into(), value.trim().into()),
@@ -40,7 +36,7 @@ fn parse_value(input: &str) -> IResult<&str, &str> {
         between("'", "'"),
         between("(", ")"),
         space,
-        is_not("\"'();}")
+        is_not("\"'();}"),
     )))))(input)
 }
 
@@ -106,7 +102,7 @@ mod test {
                 font-size: 16px;
                 "
             )
-                .is_err(),
+            .is_err(),
             true
         )
     }
