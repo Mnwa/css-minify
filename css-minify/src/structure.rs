@@ -134,11 +134,12 @@ pub struct PseudoClass {
     pub name: String,
     pub params: Option<String>,
     pub next: Option<String>,
+    pub prefix: String,
 }
 
 impl Display for PseudoClass {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, ":{}", self.name)?;
+        write!(f, "{}{}", self.prefix, self.name)?;
         if let Some(params) = &self.params {
             write!(f, "({})", params)?;
         }
@@ -355,7 +356,7 @@ mod test {
                     SelectorWithPseudoClasses(Some(Selector::Id("some_id".into())), vec![]),
                     SelectorWithPseudoClasses(Some(Selector::Tag("input".into())), vec![]),
                 ]
-                .into(),
+                    .into(),
                 parameters: {
                     let mut tmp = IndexMap::new();
                     tmp.insert("padding".into(), "5px 3px".into());
@@ -368,7 +369,7 @@ mod test {
                     SelectorWithPseudoClasses(Some(Selector::Id("some_id_2".into())), vec![]),
                     SelectorWithPseudoClasses(Some(Selector::Class("class".into())), vec![]),
                 ]
-                .into(),
+                    .into(),
                 parameters: {
                     let mut tmp = IndexMap::new();
                     tmp.insert("padding".into(), "5px 4px".into());
@@ -377,7 +378,7 @@ mod test {
                 },
             },
         ]
-        .into();
+            .into();
         assert_eq!(format!("{}", blocks), "#some_id,input{padding:5px 3px;color:white}#some_id_2,.class{padding:5px 4px;color:black}")
     }
 }

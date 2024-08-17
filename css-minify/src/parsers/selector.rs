@@ -1,10 +1,10 @@
 use crate::parsers::utils::{is_not_block_ending, non_useless};
 use crate::structure::{PseudoClass, Selector, SelectorWithPseudoClasses, Selectors};
 use nom::branch::alt;
-use nom::bytes::complete::is_not;
+use nom::bytes::complete::{is_a, is_not};
 use nom::character::complete::char;
 use nom::combinator::{map, opt};
-use nom::multi::{many0, many_m_n, separated_list1};
+use nom::multi::{many0, separated_list1};
 use nom::sequence::{delimited, pair, preceded};
 use nom::IResult;
 
@@ -43,14 +43,14 @@ pub fn parse_pseudo_class(input: &str) -> IResult<&str, PseudoClass> {
                 i.map(|i| i.to_string())
             }),
         ),
-        |((name, params), next)| PseudoClass { name, params, next },
+        |(((prefix, name), params), next)| PseudoClass { prefix, name, params, next },
     )(input)
 }
 
-pub fn parse_pseudo_class_name(input: &str) -> IResult<&str, String> {
+pub fn parse_pseudo_class_name(input: &str) -> IResult<&str, (String, String)> {
     map(
-        preceded(many_m_n(1, 2, char(':')), is_not("(,{:")),
-        |i: &str| i.to_string(),
+        pair(is_a(":"), is_not("(,{:")),
+        |(prefix, name): (&str, &str)| (prefix.to_string(), name.to_string()),
     )(input)
 }
 
@@ -112,7 +112,7 @@ mod test {
                     SelectorWithPseudoClasses(Some(Selector::Class("some_class".into())), vec![]),
                     SelectorWithPseudoClasses(Some(Selector::Tag("input".into())), vec![]),
                 ]
-                .into()
+                    .into()
             ))
         );
     }
@@ -126,12 +126,13 @@ mod test {
                 vec![SelectorWithPseudoClasses(
                     Some(Selector::Id("some_id".into())),
                     vec![PseudoClass {
+                        prefix: ":".to_string(),
                         name: "only-child".to_string(),
                         params: None,
                         next: None,
-                    }]
-                ),]
-                .into()
+                    }],
+                ), ]
+                    .into()
             ))
         );
     }
@@ -145,12 +146,13 @@ mod test {
                 vec![SelectorWithPseudoClasses(
                     Some(Selector::Id("some_id".into())),
                     vec![PseudoClass {
+                        prefix: ":".to_string(),
                         name: "nth-child".to_string(),
                         params: Some("4n".to_string()),
                         next: None,
-                    }]
-                ),]
-                .into()
+                    }],
+                ), ]
+                    .into()
             ))
         );
     }
@@ -164,12 +166,13 @@ mod test {
                 vec![SelectorWithPseudoClasses(
                     None,
                     vec![PseudoClass {
+                        prefix: ":".to_string(),
                         name: "is".to_string(),
                         params: Some("nav, .posts".to_string()),
                         next: None,
-                    }]
-                ),]
-                .into()
+                    }],
+                ), ]
+                    .into()
             ))
         );
     }
@@ -183,12 +186,13 @@ mod test {
                 vec![SelectorWithPseudoClasses(
                     None,
                     vec![PseudoClass {
+                        prefix: ":".to_string(),
                         name: "is".to_string(),
                         params: Some(".test".to_string()),
                         next: Some("a".to_string()),
-                    }]
-                ),]
-                .into()
+                    }],
+                ), ]
+                    .into()
             ))
         );
     }
@@ -202,12 +206,13 @@ mod test {
                 vec![SelectorWithPseudoClasses(
                     None,
                     vec![PseudoClass {
+                        prefix: "::".to_string(),
                         name: "is".to_string(),
                         params: Some(".test".to_string()),
                         next: Some("a".to_string()),
-                    }]
-                ),]
-                .into()
+                    }],
+                ), ]
+                    .into()
             ))
         );
     }
@@ -222,18 +227,20 @@ mod test {
                     Some(Selector::Tag("a".into())),
                     vec![
                         PseudoClass {
+                            prefix: ":".to_string(),
                             name: "not".to_string(),
                             params: Some("[href]".to_string()),
                             next: None,
                         },
                         PseudoClass {
+                            prefix: ":".to_string(),
                             name: "not".to_string(),
                             params: Some("[tabindex]".to_string()),
                             next: None,
-                        }
-                    ]
-                ),]
-                .into()
+                        },
+                    ],
+                ), ]
+                    .into()
             ))
         );
     }
