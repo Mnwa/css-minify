@@ -6,6 +6,8 @@ use std::hash::{Hash, Hasher};
 use std::str::FromStr;
 use yarte::Template;
 
+mod styles;
+
 #[get("/")]
 async fn index() -> impl Responder {
     match Template::call(&IndexTemplate::default()) {
@@ -55,14 +57,10 @@ async fn main() -> std::io::Result<()> {
     let mut hasher = DefaultHasher::default();
     let minifier = web::Data::new(Minifier::default());
 
-    let minified_css = minifier
-        .minify(include_str!("../static/main.css"), Level::Three)
-        .expect("invalid css");
-
-    minified_css.hash(&mut hasher);
+    styles::STYLES.hash(&mut hasher);
 
     let output_css = web::Data::new(MinifiedCss {
-        css: minified_css,
+        css: styles::STYLES,
         hash: hasher.finish().to_string(),
     });
 
@@ -75,13 +73,13 @@ async fn main() -> std::io::Result<()> {
             .service(minify_css)
             .service(main_css)
     })
-    .bind(std::env::var("HTTP_HOST").unwrap_or_else(|_| "0.0.0.0:8081".into()))?
-    .run()
-    .await
+        .bind(std::env::var("HTTP_HOST").unwrap_or_else(|_| "0.0.0.0:8081".into()))?
+        .run()
+        .await
 }
 
 struct MinifiedCss {
-    css: String,
+    css: &'static str,
     hash: String,
 }
 
