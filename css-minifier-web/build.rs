@@ -23,9 +23,5 @@ fn main() {
             .minify(styles.as_str(), Level::Three)
             .unwrap(),
     );
-    consts.add_value(
-        "STYLES_HASH",
-        "&str",
-        hash,
-    );
+    consts.add_value("STYLES_HASH", "&str", hash);
 }

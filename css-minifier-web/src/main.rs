@@ -1,8 +1,8 @@
+use actix_web::http::header::ETAG;
 use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
 use css_minify::optimizations::{Level, Minifier};
 use serde::Deserialize;
 use std::str::FromStr;
-use actix_web::http::header::{ETAG};
 use yarte::Template;
 
 mod styles;
@@ -63,9 +63,9 @@ async fn main() -> std::io::Result<()> {
             .service(minify_css)
             .service(main_css)
     })
-        .bind(std::env::var("HTTP_HOST").unwrap_or_else(|_| "0.0.0.0:8081".into()))?
-        .run()
-        .await
+    .bind(std::env::var("HTTP_HOST").unwrap_or_else(|_| "0.0.0.0:8081".into()))?
+    .run()
+    .await
 }
 
 #[derive(Debug, Default, Clone, Template)]
