@@ -62,7 +62,7 @@ pub fn parse_rgb(input: &str) -> IResult<&str, Color> {
 
 #[cfg(test)]
 mod test {
-    use crate::optimizations::color::{parse_hex, parse_rgb, Color, optimize_color};
+    use crate::optimizations::color::{parse_hex, parse_rgb, Color};
 
     #[test]
     fn test_rgb() {

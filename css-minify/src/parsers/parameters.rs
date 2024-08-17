@@ -1,11 +1,11 @@
-use crate::parsers::utils::{is_not_block_ending, non_useless};
+use crate::parsers::utils::{between, is_not_block_ending, non_useless, space};
 use crate::structure::{Name, Parameters, Value};
 use indexmap::map::IndexMap;
 use nom::branch::alt;
-use nom::bytes::complete::is_not;
-use nom::character::complete::char;
-use nom::combinator::{map, peek};
-use nom::multi::many0;
+use nom::bytes::complete::{is_not};
+use nom::character::complete::{char};
+use nom::combinator::{map, peek, recognize};
+use nom::multi::{many0, many1};
 use nom::sequence::{separated_pair, terminated};
 use nom::IResult;
 
@@ -20,14 +20,28 @@ pub fn parse_parameter(input: &str) -> IResult<&str, (Name, Value)> {
     map(
         terminated(
             separated_pair(
-                non_useless(is_not(":;}")),
+                parse_key,
                 char(':'),
-                non_useless(is_not(";}")),
+                parse_value,
             ),
             alt((char(';'), peek(char('}')))),
         ),
         |(name, value)| (name.trim().into(), value.trim().into()),
     )(input)
+}
+
+fn parse_key(input: &str) -> IResult<&str, &str> {
+    non_useless(is_not(":;}"))(input)
+}
+
+fn parse_value(input: &str) -> IResult<&str, &str> {
+    non_useless(recognize(many1(alt((
+        between("\"", "\""),
+        between("'", "'"),
+        between("(", ")"),
+        space,
+        is_not("\"'();}")
+    )))))(input)
 }
 
 #[cfg(test)]
@@ -92,8 +106,40 @@ mod test {
                 font-size: 16px;
                 "
             )
-            .is_err(),
+                .is_err(),
             true
+        )
+    }
+
+    #[test]
+    fn test_parameters_content() {
+        assert_eq!(
+            all_consuming(parse_parameters)(
+                "
+                content: \";\";
+                "
+            ),
+            Ok(("", {
+                let mut tmp = IndexMap::new();
+                tmp.insert("content".into(), "\";\"".into());
+                tmp.into()
+            }))
+        )
+    }
+
+    #[test]
+    fn test_parameters_url() {
+        assert_eq!(
+            all_consuming(parse_parameters)(
+                "
+                background: url(';');
+                "
+            ),
+            Ok(("", {
+                let mut tmp = IndexMap::new();
+                tmp.insert("background".into(), "url(';')".into());
+                tmp.into()
+            }))
         )
     }
 }

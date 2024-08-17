@@ -19,10 +19,7 @@ pub fn parse_useless(input: &str) -> IResult<&str, Vec<&str>> {
 }
 
 pub fn parse_comment(input: &str) -> IResult<&str, &str> {
-    map(
-        tuple((tag("/*"), take_until("*/"), tag("*/"))),
-        |(_, text, _)| text,
-    )(input)
+    between("/*", "*/")(input)
 }
 
 pub fn parse_to_block_open<'a, T: From<&'a str>>(input: &'a str) -> IResult<&'a str, T> {
@@ -71,6 +68,10 @@ pub fn not_space(s: &str) -> IResult<&str, &str> {
 
 pub fn space(s: &str) -> IResult<&str, &str> {
     is_a(" \t\r\n")(s)
+}
+
+pub fn between<'a>(opener: &'a str, closer: &'a str) -> impl FnMut(&'a str) -> IResult<&'a str, &'a str> + 'a {
+    delimited(tag(opener), take_until(closer), tag(closer))
 }
 
 #[cfg(test)]
