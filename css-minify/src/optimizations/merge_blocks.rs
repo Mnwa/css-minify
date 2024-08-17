@@ -43,15 +43,15 @@ impl Transform for MergeBlocks {
                         screen,
                         entities: self.transform_many(entities),
                     }
-                        .into(),
+                    .into(),
                     CssEntity::Supports(Supports {
-                                            conditions,
-                                            entities,
-                                        }) => Supports {
+                        conditions,
+                        entities,
+                    }) => Supports {
                         conditions,
                         entities: self.transform_many(entities),
                     }
-                        .into(),
+                    .into(),
                     entity => entity,
                 })
                 .collect(),
@@ -79,7 +79,7 @@ mod test {
                         Some(Selector::Class("test".into())),
                         vec![]
                     )]
-                        .into(),
+                    .into(),
                     parameters: {
                         let mut tmp = IndexMap::new();
                         tmp.insert("background-color".into(), "#f64e60 !important".into());
@@ -91,7 +91,7 @@ mod test {
                         Some(Selector::Class("test".into())),
                         vec![]
                     )]
-                        .into(),
+                    .into(),
                     parameters: {
                         let mut tmp = IndexMap::new();
                         tmp.insert("color".into(), "#f64e60 !important".into());
@@ -104,7 +104,7 @@ mod test {
                     Some(Selector::Class("test".into())),
                     vec![]
                 )]
-                    .into(),
+                .into(),
                 parameters: {
                     let mut tmp = IndexMap::new();
                     tmp.insert("background-color".into(), "#f64e60 !important".into());

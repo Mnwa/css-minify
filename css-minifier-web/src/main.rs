@@ -24,7 +24,9 @@ async fn minify_css(
     minifier: web::Data<Minifier>,
 ) -> impl Responder {
     let level = Level::from_str(&request.level).unwrap_or(Level::One);
-    let output_css = minifier.minify(&request.input_css, level).unwrap_or_else(|e| e.to_string());
+    let output_css = minifier
+        .minify(&request.input_css, level)
+        .unwrap_or_else(|e| e.to_string());
 
     match Template::call(&IndexTemplate {
         input_css: Some(request.into_inner().input_css),
@@ -73,9 +75,9 @@ async fn main() -> std::io::Result<()> {
             .service(minify_css)
             .service(main_css)
     })
-        .bind(std::env::var("HTTP_HOST").unwrap_or_else(|_| "0.0.0.0:8081".into()))?
-        .run()
-        .await
+    .bind(std::env::var("HTTP_HOST").unwrap_or_else(|_| "0.0.0.0:8081".into()))?
+    .run()
+    .await
 }
 
 struct MinifiedCss {

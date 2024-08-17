@@ -47,13 +47,13 @@ impl Transform for MergeMedia {
                 .filter(|e| !matches!(e, CssEntity::Media(_)))
                 .map(|e| match e {
                     CssEntity::Supports(Supports {
-                                            conditions,
-                                            entities,
-                                        }) => Supports {
+                        conditions,
+                        entities,
+                    }) => Supports {
                         conditions,
                         entities: self.transform_many(entities),
                     }
-                        .into(),
+                    .into(),
                     entity => entity,
                 })
                 .collect(),
@@ -88,10 +88,10 @@ mod test {
                             Some(Selector::Class("test".into())),
                             vec![]
                         )]
-                            .into(),
+                        .into(),
                         parameters: Default::default()
                     })]
-                        .into()
+                    .into()
                 }),
                 CssEntity::Media(Media {
                     screen: Value::from("only screen and (max-width: 992px)"),
@@ -100,10 +100,10 @@ mod test {
                             Some(Selector::Class("test2".into())),
                             vec![]
                         )]
-                            .into(),
+                        .into(),
                         parameters: Default::default()
                     })]
-                        .into()
+                    .into()
                 })
             ])),
             CssEntities(vec![CssEntity::Media(Media {
@@ -114,7 +114,7 @@ mod test {
                             Some(Selector::Class("test".into())),
                             vec![]
                         )]
-                            .into(),
+                        .into(),
                         parameters: Default::default()
                     }),
                     CssEntity::Block(Block {
@@ -122,11 +122,11 @@ mod test {
                             Some(Selector::Class("test2".into())),
                             vec![]
                         )]
-                            .into(),
+                        .into(),
                         parameters: Default::default()
                     })
                 ]
-                    .into()
+                .into()
             })])
         )
     }

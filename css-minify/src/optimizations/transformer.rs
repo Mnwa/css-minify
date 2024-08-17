@@ -56,9 +56,9 @@ pub trait Transform {
                     .into(),
             }),
             CssEntity::Supports(Supports {
-                                    conditions,
-                                    entities,
-                                }) => CssEntity::Supports(Supports {
+                conditions,
+                entities,
+            }) => CssEntity::Supports(Supports {
                 conditions,
                 entities: entities
                     .0

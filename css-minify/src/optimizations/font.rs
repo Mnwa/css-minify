@@ -34,25 +34,25 @@ mod test {
                     Some(Selector::Class("test".into())),
                     vec![],
                 )]
-                    .into(),
+                .into(),
                 parameters: {
                     let mut tmp = IndexMap::new();
                     tmp.insert("font-weight".into(), "bold".into());
                     tmp.into()
                 },
-            }), ])),
+            }),])),
             CssEntities(vec![CssEntity::Block(Block {
                 selectors: vec![SelectorWithPseudoClasses(
                     Some(Selector::Class("test".into())),
                     vec![],
                 )]
-                    .into(),
+                .into(),
                 parameters: {
                     let mut tmp = IndexMap::new();
                     tmp.insert("font-weight".into(), "700".into());
                     tmp.into()
                 },
-            }), ])
+            }),])
         )
     }
 }

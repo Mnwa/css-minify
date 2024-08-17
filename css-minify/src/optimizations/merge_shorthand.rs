@@ -508,7 +508,7 @@ mod test {
                         Parameters(map)
                     },
                 }
-                    .into()
+                .into()
             ),
             Block {
                 selectors: Selectors::default(),
@@ -521,7 +521,7 @@ mod test {
                     Parameters(map)
                 },
             }
-                .into()
+            .into()
         )
     }
 
@@ -540,7 +540,7 @@ mod test {
                         Parameters(map)
                     },
                 }
-                    .into()
+                .into()
             ),
             Block {
                 selectors: Selectors::default(),
@@ -553,7 +553,7 @@ mod test {
                     Parameters(map)
                 },
             }
-                .into()
+            .into()
         )
     }
 
@@ -569,7 +569,7 @@ mod test {
                         Parameters(map)
                     },
                 }
-                    .into()
+                .into()
             ),
             Block {
                 selectors: Selectors::default(),
@@ -579,7 +579,7 @@ mod test {
                     Parameters(map)
                 },
             }
-                .into()
+            .into()
         )
     }
 
@@ -597,7 +597,7 @@ mod test {
                         Parameters(map)
                     },
                 }
-                    .into()
+                .into()
             ),
             Block {
                 selectors: Selectors::default(),
@@ -607,7 +607,7 @@ mod test {
                     Parameters(map)
                 },
             }
-                .into()
+            .into()
         )
     }
 
@@ -625,7 +625,7 @@ mod test {
                         Parameters(map)
                     },
                 }
-                    .into()
+                .into()
             ),
             Block {
                 selectors: Selectors::default(),
@@ -635,7 +635,7 @@ mod test {
                     Parameters(map)
                 },
             }
-                .into()
+            .into()
         )
     }
 }
