@@ -190,13 +190,10 @@ impl Display for MError<'_> {
             Err::Failure(e) => Some(e.input.len()),
         };
         if let Some(size) = unparsed_size {
-            let parsed_css = &self.0[..self.0.len() - size];
+            let parsed_css = &self.0[..size];
+            let (count, last_line) = parsed_css.lines().enumerate().last().unwrap();
 
-            write!(
-                f,
-                "Invalid block at line {}",
-                parsed_css.lines().count() + 1
-            )
+            write!(f, "Invalid block at line {}:{}", count + 1, last_line.len())
         } else {
             write!(f, "Invalid css")
         }
@@ -271,7 +268,7 @@ mod test {
                 )
                 .unwrap_err()
                 .to_string(),
-            "Invalid block at line 6"
+            "Invalid block at line 9:28"
         )
     }
 
