@@ -2,7 +2,7 @@
 name = "css-minify"
 version = "0.4.2"
 authors = ["Mnwa <mihan@panfilov.biz>"]
-edition = "2018"
+edition = "2021"
 description = "CSS parser and minificator based on nom"
 keywords = ["minify", "minifier", "css", "optimization", "parser"]
 categories = ["parser-implementations", "parsing"]
