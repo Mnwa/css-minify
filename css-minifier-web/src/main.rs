@@ -73,9 +73,9 @@ async fn main() -> std::io::Result<()> {
             .service(minify_css)
             .service(main_css)
     })
-        .bind(std::env::var("HTTP_HOST").unwrap_or_else(|_| "0.0.0.0:8081".into()))?
-        .run()
-        .await
+    .bind(std::env::var("HTTP_HOST").unwrap_or_else(|_| "0.0.0.0:8081".into()))?
+    .run()
+    .await
 }
 
 struct MinifiedCss {
