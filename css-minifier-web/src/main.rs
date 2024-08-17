@@ -1,6 +1,5 @@
 use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
 use css_minify::optimizations::{Level, Minifier};
-use parking_lot::Mutex;
 use serde::Deserialize;
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
@@ -22,13 +21,10 @@ async fn index() -> impl Responder {
 #[post("/")]
 async fn minify_css(
     request: web::Form<MinifyRequest>,
-    minifier: web::Data<Mutex<Minifier>>,
+    minifier: web::Data<Minifier>,
 ) -> impl Responder {
     let level = Level::from_str(&request.level).unwrap_or(Level::One);
-    let output_css = match minifier.lock().minify(&request.input_css, level) {
-        Ok(output_css) => output_css,
-        Err(e) => e.to_string(),
-    };
+    let output_css = minifier.minify(&request.input_css, level).unwrap_or_else(|e| e.to_string());
 
     match Template::call(&IndexTemplate {
         input_css: Some(request.into_inner().input_css),
@@ -55,10 +51,9 @@ async fn main_css(css: web::Data<MinifiedCss>) -> impl Responder {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let mut hasher = DefaultHasher::default();
-    let minifier = web::Data::new(Mutex::new(Minifier::default()));
+    let minifier = web::Data::new(Minifier::default());
 
     let minified_css = minifier
-        .lock()
         .minify(include_str!("../static/main.css"), Level::Three)
         .expect("invalid css");
 
@@ -78,9 +73,9 @@ async fn main() -> std::io::Result<()> {
             .service(minify_css)
             .service(main_css)
     })
-    .bind(std::env::var("HTTP_HOST").unwrap_or_else(|_| "0.0.0.0:8081".into()))?
-    .run()
-    .await
+        .bind(std::env::var("HTTP_HOST").unwrap_or_else(|_| "0.0.0.0:8081".into()))?
+        .run()
+        .await
 }
 
 struct MinifiedCss {

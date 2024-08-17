@@ -7,8 +7,8 @@ pub struct Transformer {
 }
 
 pub enum TransformerParameterFn {
-    Name(Box<dyn FnMut(Name) -> Name>),
-    Value(Box<dyn FnMut(Value) -> Value>),
+    Name(Box<dyn Fn(Name) -> Name + Send + Sync>),
+    Value(Box<dyn Fn(Value) -> Value + Send + Sync>),
 }
 
 unsafe impl Send for TransformerParameterFn {}
@@ -20,12 +20,12 @@ impl Transformer {
 }
 
 impl Transform for Transformer {
-    fn transform_parameters(&mut self, parameters: Parameters) -> Parameters {
+    fn transform_parameters(&self, parameters: Parameters) -> Parameters {
         parameters
             .0
             .into_iter()
             .map(|(mut name, mut value)| {
-                for transformer in self.parameters.iter_mut() {
+                for transformer in self.parameters.iter() {
                     match transformer {
                         TransformerParameterFn::Name(t) => name = t(name),
                         TransformerParameterFn::Value(t) => value = t(value),
@@ -39,8 +39,8 @@ impl Transform for Transformer {
 }
 
 pub trait Transform {
-    fn transform_parameters(&mut self, parameters: Parameters) -> Parameters;
-    fn transform(&mut self, entity: CssEntity) -> CssEntity {
+    fn transform_parameters(&self, parameters: Parameters) -> Parameters;
+    fn transform(&self, entity: CssEntity) -> CssEntity {
         match entity {
             CssEntity::Block(mut block) => {
                 block.parameters = self.transform_parameters(block.parameters);
@@ -56,9 +56,9 @@ pub trait Transform {
                     .into(),
             }),
             CssEntity::Supports(Supports {
-                conditions,
-                entities,
-            }) => CssEntity::Supports(Supports {
+                                    conditions,
+                                    entities,
+                                }) => CssEntity::Supports(Supports {
                 conditions,
                 entities: entities
                     .0
@@ -98,7 +98,7 @@ pub trait Transform {
             CssEntity::At(at) => CssEntity::At(at),
         }
     }
-    fn transform_many(&mut self, blocks: CssEntities) -> CssEntities {
+    fn transform_many(&self, blocks: CssEntities) -> CssEntities {
         CssEntities(blocks.0.into_iter().map(|b| self.transform(b)).collect())
     }
 }

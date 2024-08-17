@@ -13,7 +13,7 @@ pub struct Margin(Option<Value>, Option<Value>, Option<Value>, Option<Value>);
 pub struct Padding(Option<Value>, Option<Value>, Option<Value>, Option<Value>);
 
 impl Transform for Merge {
-    fn transform_parameters(&mut self, mut parameters: Parameters) -> Parameters {
+    fn transform_parameters(&self, mut parameters: Parameters) -> Parameters {
         let mut margin = Margin::default();
         let mut padding = Padding::default();
         parameters.0.iter().for_each(|(name, val)| {
@@ -235,7 +235,7 @@ mod test {
                         Parameters(map)
                     },
                 }
-                .into()
+                    .into()
             ),
             Block {
                 selectors: Selectors::default(),
@@ -245,7 +245,7 @@ mod test {
                     Parameters(map)
                 },
             }
-            .into()
+                .into()
         )
     }
 
@@ -264,7 +264,7 @@ mod test {
                         Parameters(map)
                     },
                 }
-                .into()
+                    .into()
             ),
             Block {
                 selectors: Selectors::default(),
@@ -274,7 +274,7 @@ mod test {
                     Parameters(map)
                 },
             }
-            .into()
+                .into()
         )
     }
 
@@ -293,7 +293,7 @@ mod test {
                         Parameters(map)
                     },
                 }
-                .into()
+                    .into()
             ),
             Block {
                 selectors: Selectors::default(),
@@ -303,7 +303,7 @@ mod test {
                     Parameters(map)
                 },
             }
-            .into()
+                .into()
         )
     }
 
@@ -322,7 +322,7 @@ mod test {
                         Parameters(map)
                     },
                 }
-                .into()
+                    .into()
             ),
             Block {
                 selectors: Selectors::default(),
@@ -332,7 +332,7 @@ mod test {
                     Parameters(map)
                 },
             }
-            .into()
+                .into()
         )
     }
 }

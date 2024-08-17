@@ -35,7 +35,7 @@ pub struct Minifier {
 
 impl Minifier {
     /// Minify css input and return result with minified css string
-    pub fn minify<'a>(&mut self, input: &'a str, level: Level) -> MResult<'a> {
+    pub fn minify<'a>(&self, input: &'a str, level: Level) -> MResult<'a> {
         let mut result = parse_css(input)
             .map(|(_, blocks)| blocks)
             .map_err(|e| MError(input, e));

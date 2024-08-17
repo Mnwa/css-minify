@@ -1,15 +1,14 @@
 [package]
 name = "css-minifier-web"
-version = "0.3.0"
+version = "0.5.0"
 authors = ["Mnwa <mihan@panfilov.biz>"]
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-css-minify = { version = "0.4", path = "../css-minify" }
+css-minify = { version = "0.5", path = "../css-minify" }
 actix-web = { version = "4" }
 actix-files = "0.6"
 yarte = "0.15"
 serde = { version = "1.0", features = ["derive"] }
-parking_lot = "0.12"
