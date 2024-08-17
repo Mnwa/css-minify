@@ -12,7 +12,7 @@ license = "Apache-2.0/MIT"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-css-minify = { version = "0.3", path = "../css-minify" }
+css-minify = { version = "0.4", path = "../css-minify" }
 clap = { version = "^4", features = ["derive"] }
 shellexpand = "3.1"
 indoc = "2.0"
