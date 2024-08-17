@@ -32,7 +32,7 @@ fn main() {
         output,
         level,
     } = Opts::parse();
-    let mut minifier = Minifier::default();
+    let minifier = Minifier::default();
 
     let input_file = read_to_string(
         shellexpand::full(&input)
