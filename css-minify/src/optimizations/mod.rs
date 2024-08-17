@@ -243,7 +243,7 @@ mod test {
                     font-weight: bold;
                 }
             "#,
-                    Level::Three
+                Level::Three,
             ),
             Ok("#some_id,input{padding:5px 3px;color:white}#some_id_2,.class{padding:5px 4px;color:#fff;font-weight:700}".into())
         )
@@ -267,7 +267,7 @@ mod test {
                     Color: rgb(255, 255, 255);
                 }
             "#,
-                    Level::Three
+                    Level::Three,
                 )
                 .unwrap_err()
                 .to_string(),
@@ -284,7 +284,7 @@ mod test {
                         color: red;
                     }
                     "#,
-                Level::Three
+                Level::Three,
             ),
             Ok("p:not(.classy){color:red}".into())
         )
@@ -299,9 +299,17 @@ mod test {
                       width: device-width;
                     }
                     "#,
-                Level::Three
+                Level::Three,
             ),
             Ok("@-ms-viewport {width:device-width}".into())
+        )
+    }
+
+    #[test]
+    fn test_block_with_invalid_color() {
+        assert_eq!(
+            Minifier::default().minify("*{color:#f}", Level::Three),
+            Ok("*{color:#f}".into())
         )
     }
 }

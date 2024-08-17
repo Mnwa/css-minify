@@ -33,66 +33,31 @@ mod test {
                 CssEntity::Block(Block {
                     selectors: vec![SelectorWithPseudoClasses(
                         Some(Selector::Class("test".into())),
-                        vec![]
+                        vec![],
                     )]
-                    .into(),
+                        .into(),
                     parameters: {
                         let mut tmp = IndexMap::new();
                         tmp.insert(
-                            "font".into(),
-                            "bold 2.2rem/.9 \"Open Sans Condensed\", sans-serif".into(),
+                            "font-weight".into(),
+                            "bold".into(),
                         );
                         tmp.into()
-                    }
-                }),
-                CssEntity::Block(Block {
-                    selectors: vec![SelectorWithPseudoClasses(
-                        Some(Selector::Class("test".into())),
-                        vec![]
-                    )]
-                    .into(),
-                    parameters: {
-                        let mut tmp = IndexMap::new();
-                        tmp.insert(
-                            "font-family".into(),
-                            "\"Helvetica Neue\", Arial, sans-serif, Helvetica".into(),
-                        );
-                        tmp.insert("font-weight".into(), "normal".into());
-                        tmp.into()
-                    }
+                    },
                 }),
             ])),
             CssEntities(vec![
                 CssEntity::Block(Block {
                     selectors: vec![SelectorWithPseudoClasses(
                         Some(Selector::Class("test".into())),
-                        vec![]
+                        vec![],
                     )]
-                    .into(),
+                        .into(),
                     parameters: {
                         let mut tmp = IndexMap::new();
-                        tmp.insert(
-                            "font".into(),
-                            "700 2.2rem/.9 Open Sans Condensed, sans-serif".into(),
-                        );
+                        tmp.insert("font-weight".into(), "700".into());
                         tmp.into()
-                    }
-                }),
-                CssEntity::Block(Block {
-                    selectors: vec![SelectorWithPseudoClasses(
-                        Some(Selector::Class("test".into())),
-                        vec![]
-                    )]
-                    .into(),
-                    parameters: {
-                        let mut tmp = IndexMap::new();
-                        tmp.insert(
-                            "font-family".into(),
-                            "Helvetica Neue, Arial, sans-serif, Helvetica".into(),
-                        );
-                        tmp.insert("font-weight".into(), "400".into());
-                        tmp.into()
-                    }
+                    },
                 }),
             ])
         )

@@ -24,7 +24,7 @@ pub fn optimize_color(input: &str) -> Color {
 
 pub fn parse_hex(input: &str) -> IResult<&str, Color> {
     map(recognize(preceded(tag("#"), hex_digit1)), |color: &str| {
-        if color[1..4] == color[4..] {
+        if color.len() > 3 && color[1..4] == color[4..] {
             return Color((&color[..4]).to_lowercase());
         }
         Color(color.to_lowercase())
@@ -62,7 +62,7 @@ pub fn parse_rgb(input: &str) -> IResult<&str, Color> {
 
 #[cfg(test)]
 mod test {
-    use crate::optimizations::color::{parse_hex, parse_rgb, Color};
+    use crate::optimizations::color::{parse_hex, parse_rgb, Color, optimize_color};
 
     #[test]
     fn test_rgb() {
