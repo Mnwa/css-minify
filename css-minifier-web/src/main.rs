@@ -1,9 +1,8 @@
 use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
 use css_minify::optimizations::{Level, Minifier};
 use serde::Deserialize;
-use std::collections::hash_map::DefaultHasher;
-use std::hash::{Hash, Hasher};
 use std::str::FromStr;
+use actix_web::http::header::{ETAG};
 use yarte::Template;
 
 mod styles;
@@ -45,42 +44,28 @@ async fn minify_css(
 }
 
 #[get("/static/main.css")]
-async fn main_css(css: web::Data<MinifiedCss>) -> impl Responder {
+async fn main_css() -> impl Responder {
     HttpResponse::Ok()
         .content_type("text/css; charset=utf-8")
-        .append_header(("Etag", &*css.hash))
-        .body(css.css.to_string())
+        .append_header((ETAG, styles::STYLES_HASH))
+        .body(styles::STYLES)
 }
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    let mut hasher = DefaultHasher::default();
     let minifier = web::Data::new(Minifier::default());
-
-    styles::STYLES.hash(&mut hasher);
-
-    let output_css = web::Data::new(MinifiedCss {
-        css: styles::STYLES,
-        hash: hasher.finish().to_string(),
-    });
 
     HttpServer::new(move || {
         App::new()
             .app_data(web::FormConfig::default().limit(134_217_728))
             .app_data(minifier.clone())
-            .app_data(output_css.clone())
             .service(index)
             .service(minify_css)
             .service(main_css)
     })
-    .bind(std::env::var("HTTP_HOST").unwrap_or_else(|_| "0.0.0.0:8081".into()))?
-    .run()
-    .await
-}
-
-struct MinifiedCss {
-    css: &'static str,
-    hash: String,
+        .bind(std::env::var("HTTP_HOST").unwrap_or_else(|_| "0.0.0.0:8081".into()))?
+        .run()
+        .await
 }
 
 #[derive(Debug, Default, Clone, Template)]
