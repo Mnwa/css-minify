@@ -8,7 +8,7 @@ impl Transform for FontTransformer {
     fn transform_parameters(&mut self, mut parameters: Parameters) -> Parameters {
         parameters
             .iter_mut()
-            .filter(|(name, _)| matches!(name.as_str(), "font" | "font-weight" | "font-family"))
+            .filter(|(name, _)| matches!(name.as_str(), "font-weight"))
             .for_each(|(_, value): (_, &mut Value)| {
                 *value = value
                     .replace("normal", "400")
