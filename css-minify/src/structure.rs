@@ -1,4 +1,4 @@
-use derive_more::{Deref, DerefMut, Display, From, Into};
+use derive_more::{Deref, DerefMut, Display as DeriveDisplay, From, Into};
 use indexmap::map::IndexMap;
 use std::fmt::Display;
 use std::fmt::Formatter;
@@ -79,7 +79,7 @@ pub enum At {
     Charset(CharsetAt),
 }
 
-#[derive(Clone, Eq, PartialEq, Debug, From, Display)]
+#[derive(Clone, Eq, PartialEq, Debug, From, DeriveDisplay)]
 pub enum CssEntity {
     Block(Block),
     Media(Media),
